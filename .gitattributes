@@ -1,0 +1,4 @@
+* linguist-vendored
+*.java linguist-language=java linguist-vendored=false
+*.cpp linguist-language=cpp linguist-vendored=false
+*.hh linguist-language=cpp linguist-vendored=false

@@ -1,0 +1,80 @@
+<resources>
+	<string name="app_name">Rattlegram</string>
+	<string name="decoder_settings">Decoder Settings</string>
+	<string name="encoder_settings">Encoder Settings</string>
+	<string name="sample_rate">Sample Rate</string>
+	<string name="rate_8000">8 kHz</string>
+	<string name="rate_16000">16 kHz</string>
+	<string name="rate_32000">32 kHz</string>
+	<string name="rate_44100">44.1 kHz</string>
+	<string name="rate_48000">48 kHz</string>
+	<string name="channel_select">Channel Select</string>
+	<string name="channel_default">Default</string>
+	<string name="channel_first">First</string>
+	<string name="channel_second">Second</string>
+	<string name="channel_summation">Summation</string>
+	<string name="channel_analytic">Analytic</string>
+	<string name="audio_source">Audio Source</string>
+	<string name="source_default">Default</string>
+	<string name="source_microphone">Microphone</string>
+	<string name="source_camcorder">Camcorder</string>
+	<string name="source_voice_recognition">Voice Recognition</string>
+	<string name="source_unprocessed">Unprocessed</string>
+	<string name="leading_noise">Leading Noise</string>
+	<string name="quarter_second">Quarter of a sec.</string>
+	<string name="half_second">Half a second</string>
+	<string name="one_second">One second</string>
+	<string name="two_seconds">Two seconds</string>
+	<string name="four_seconds">Four seconds</string>
+	<string name="fancy_header">Fancy Header</string>
+	<string name="repeater_mode">Repeater Mode</string>
+	<string name="night_mode">Night Mode</string>
+	<string name="enable">Enable</string>
+	<string name="disable">Disable</string>
+	<string name="force_quit">Force Quit</string>
+	<string name="quit">Quit</string>
+	<string name="close">Close</string>
+	<string name="okay">Okay</string>
+	<string name="cancel">Cancel</string>
+	<string name="draft">Draft</string>
+	<string name="discard">Discard</string>
+	<string name="transmit">Transmit</string>
+	<string name="compose">Compose</string>
+	<string name="compose_message">Compose Message</string>
+	<string name="call_sign">Call Sign</string>
+	<string name="call_hint">Your call sign here</string>
+	<string name="message_hint">Your message here</string>
+	<string name="carrier_frequency">Carrier Frequency</string>
+	<string name="audio_init_failed">Audio initialization failed. Try other settings. Force Quit and restart might also help.</string>
+	<string name="audio_setup_failed">Audio setup failed. Try other settings.</string>
+	<string name="audio_permission_denied">Microphone access denied. Check permissions.</string>
+	<string name="audio_recording_error">Recording audio failed. Check if access is blocked. Restart device if necessary to gain back access.</string>
+	<string name="recorder_status">Recorder Status</string>
+	<string name="decoder_status">Decoder Status</string>
+	<string name="encoder_status">Encoder Status</string>
+	<string name="title_message">%1$s - %2$s\n%3$s</string>
+	<string name="from_title">From %1$s - Mode %2$d - CFO %3$.2f Hz</string>
+	<string name="sent_title">Sent %1$s - Mode %2$d - CFO %3$d Hz</string>
+	<string name="repeat_title">Repeat %1$s - Mode %2$d - CFO %3$d Hz</string>
+	<string name="preamble_fail">Preamble failure</string>
+	<string name="preamble_nope">Ignoring preamble</string>
+	<string name="heap_error">Not enough memory</string>
+	<string name="decoding_failed">Decoding failed</string>
+	<string name="payload_unknown">Payload unknown</string>
+	<string name="privacy_policy">Privacy Policy</string>
+	<string name="privacy_policy_text">To be able to decode COFDMTV encoded text messages, the app needs access to the microphone.
+Having access to the microphone is considered to be a sensitive permission and you have the right to know what the app does with that access:
+The data recorded from the microphone is only used to feed the COFDMTV decoder.
+The app uses a very small temporary buffer in volatile memory and constantly overwrites this buffer with new data from the microphone.
+The resulting text message from the COFDMTV decoder is the only data that gets stored in persistent storage on your Android device.</string>
+	<string name="about">About Rattlegram</string>
+	<string name="about_text">Rattlegram %1$s\nCopyright 2022 aicodix GmbH
+\n\nPlease read WARNING and DISCLAIMER at the bottom of this page.
+\n\nRattlegram transmits short text messages as COFDMTV encoded audio and is based on open-source software:
+\n\nOFDM modem implementation and specification:\nhttps://github.com/aicodix/modem\nBSD Zero Clause License
+\n\nPolar list and ordered statistics decoding:\nhttps://github.com/aicodix/code\nBSD Zero Clause License
+\n\nDigital signal processing:\nhttps://github.com/aicodix/dsp\nBSD Zero Clause License
+\n\nFancy header font:\nhttp://terminus-font.sourceforge.net\nSIL Open Font License
+\n\nWARNING:\nThe higher sampling rates (44.1 and 48 kHz) enable carrier frequencies above 16 kHz for ultrasonic transmissions. Prolonged exposure to high pitched sounds can damage your hearing, even if you can\'t hear them.
+\n\nDISCLAIMER:\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</string>
+</resources>
