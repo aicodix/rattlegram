@@ -326,6 +326,8 @@ public class MainActivity extends AppCompatActivity {
 		state.putString("callSign", callSign);
 		state.putBoolean("fancyHeader", fancyHeader);
 		state.putBoolean("repeaterMode", repeaterMode);
+		for (int i = 0; i < messages.getCount(); ++i)
+			state.putString("m" + i, messages.getItem(i));
 		super.onSaveInstanceState(state);
 	}
 
@@ -343,11 +345,14 @@ public class MainActivity extends AppCompatActivity {
 		edit.putString("callSign", callSign);
 		edit.putBoolean("fancyHeader", fancyHeader);
 		edit.putBoolean("repeaterMode", repeaterMode);
+		for (int i = 0; i < messages.getCount(); ++i)
+			edit.putString("m" + i, messages.getItem(i));
 		edit.apply();
 	}
 
 	@Override
 	protected void onCreate(Bundle state) {
+		messages = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
 		final int defaultSampleRate = 8000;
 		final int defaultChannelSelect = 0;
 		final int defaultAudioSource = MediaRecorder.AudioSource.DEFAULT;
@@ -369,6 +374,11 @@ public class MainActivity extends AppCompatActivity {
 			callSign = pref.getString("callSign", defaultCallSign);
 			fancyHeader = pref.getBoolean("fancyHeader", defaultFancyHeader);
 			repeaterMode = pref.getBoolean("repeaterMode", defaultRepeaterMode);
+			for (int i = 0; i < 100; ++i) {
+				String mesg = pref.getString("m" + i, null);
+				if (mesg != null)
+					messages.add(mesg);
+			}
 		} else {
 			AppCompatDelegate.setDefaultNightMode(state.getInt("nightMode", AppCompatDelegate.getDefaultNightMode()));
 			outputRate = state.getInt("outputRate", defaultSampleRate);
@@ -381,6 +391,11 @@ public class MainActivity extends AppCompatActivity {
 			callSign = state.getString("callSign", defaultCallSign);
 			fancyHeader = state.getBoolean("fancyHeader", defaultFancyHeader);
 			repeaterMode = state.getBoolean("repeaterMode", defaultRepeaterMode);
+			for (int i = 0; i < 100; ++i) {
+				String mesg = state.getString("m" + i, null);
+				if (mesg != null)
+					messages.add(mesg);
+			}
 		}
 		super.onCreate(state);
 		ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -389,7 +404,6 @@ public class MainActivity extends AppCompatActivity {
 		cachedMode = new int[1];
 		cachedCall = new byte[10];
 		payload = new byte[170];
-		messages = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
 		binding.messages.setAdapter(messages);
 		initAudioTrack();
 
