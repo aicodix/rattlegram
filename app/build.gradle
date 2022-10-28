@@ -39,6 +39,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.aicodix.rattlegram'
 }
 
 dependencies {
