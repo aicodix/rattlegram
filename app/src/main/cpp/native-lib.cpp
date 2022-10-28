@@ -5,6 +5,7 @@ Copyright 2022 Ahmet Inan <inan@aicodix.de>
 */
 
 #include <jni.h>
+#include <cassert>
 #include "encoder.hh"
 #include "decoder.hh"
 
