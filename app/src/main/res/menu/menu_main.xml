@@ -3,6 +3,13 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	tools:context="com.aicodix.rattlegram.MainActivity">
 	<item
+		android:id="@+id/action_recorder_status"
+		android:icon="@drawable/ic_baseline_mic_off_24"
+		android:title="@string/recorder_status"
+		app:iconTint="@color/tint"
+		android:enabled="false"
+		app:showAsAction="always" />
+	<item
 		android:id="@+id/action_compose"
 		android:icon="@android:drawable/ic_dialog_email"
 		android:title="@string/compose"

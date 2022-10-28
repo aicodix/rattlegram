@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.Toast;
 
 import com.aicodix.rattlegram.databinding.ActivityMainBinding;
 
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 	private AudioTrack audioTrack;
 	private boolean fancyHeader;
 	private boolean repeaterMode;
+	private boolean recordStatus;
 	private int noiseSymbols;
 	private int recordRate;
 	private int outputRate;
@@ -185,6 +187,10 @@ public class MainActivity extends AppCompatActivity {
 		}
 	};
 
+	private void showToast(String str) {
+		Toast.makeText(getApplicationContext(), str, Toast.LENGTH_LONG).show();
+	}
+
 	private byte[] callTerm() {
 		return Arrays.copyOf(callSign.getBytes(StandardCharsets.US_ASCII), callSign.length() + 1);
 	}
@@ -221,8 +227,10 @@ public class MainActivity extends AppCompatActivity {
 			audioRecord.startRecording();
 			if (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
 				audioRecord.read(recordBuffer, 0, recordBuffer.length);
+				setRecordStatus(true);
 			} else {
-				addMessage(getString(R.string.recorder_status), getString(R.string.audio_recording_error));
+				showToast(getString(R.string.audio_recording_error));
+				setRecordStatus(false);
 			}
 		}
 	}
@@ -230,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
 	private void stopListening() {
 		if (audioRecord != null)
 			audioRecord.stop();
+		setRecordStatus(false);
 	}
 
 	private void initAudioRecord(boolean restart) {
@@ -267,15 +276,19 @@ public class MainActivity extends AppCompatActivity {
 				} else {
 					testAudioRecord.release();
 					addMessage(getString(R.string.encoder_status), getString(R.string.heap_error));
+					setRecordStatus(false);
 				}
 			} else {
 				testAudioRecord.release();
-				addMessage(getString(R.string.recorder_status), getString(R.string.audio_init_failed));
+				showToast(getString(R.string.audio_init_failed));
+				setRecordStatus(false);
 			}
 		} catch (IllegalArgumentException e) {
-			addMessage(getString(R.string.recorder_status), getString(R.string.audio_setup_failed));
+			showToast(getString(R.string.audio_setup_failed));
+			setRecordStatus(false);
 		} catch (SecurityException e) {
-			addMessage(getString(R.string.recorder_status), getString(R.string.audio_permission_denied));
+			showToast(getString(R.string.audio_permission_denied));
+			setRecordStatus(false);
 		}
 	}
 
@@ -410,12 +423,24 @@ public class MainActivity extends AppCompatActivity {
 		List<String> permissions = new ArrayList<>();
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 			permissions.add(Manifest.permission.RECORD_AUDIO);
-			addMessage(getString(R.string.recorder_status), getString(R.string.audio_permission_denied));
+			showToast(getString(R.string.audio_permission_denied));
+			setRecordStatus(false);
 		} else {
 			initAudioRecord(false);
 		}
 		if (!permissions.isEmpty())
 			ActivityCompat.requestPermissions(this, permissions.toArray(new String[0]), permissionID);
+	}
+
+	private void setRecordStatus(boolean okay) {
+		recordStatus = okay;
+		if (menu != null)
+			updateRecordStatusMenu();
+	}
+
+	private void updateRecordStatusMenu() {
+		int icon = recordStatus ? R.drawable.ic_baseline_mic_24 : R.drawable.ic_baseline_mic_off_24;
+		menu.findItem(R.id.action_recorder_status).setIcon(icon);
 	}
 
 	private void setNoiseSymbols(int newNoiseSymbols) {
@@ -602,6 +627,7 @@ public class MainActivity extends AppCompatActivity {
 		updateOutputChannelMenu();
 		updateRecordRateMenu();
 		updateRecordChannelMenu();
+		updateRecordStatusMenu();
 		updateAudioSourceMenu();
 		updateNoiseSymbolsMenu();
 		updateFancyHeaderMenu();
