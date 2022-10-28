@@ -11,7 +11,7 @@
 		app:showAsAction="always" />
 	<item
 		android:id="@+id/action_compose"
-		android:icon="@android:drawable/ic_dialog_email"
+		android:icon="@drawable/ic_baseline_email_24"
 		android:title="@string/compose"
 		app:iconTint="@color/tint"
 		app:showAsAction="always" />
