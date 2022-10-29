@@ -418,6 +418,12 @@ public class MainActivity extends AppCompatActivity {
 		cachedCall = new byte[10];
 		payload = new byte[170];
 		binding.messages.setAdapter(messages);
+		binding.messages.setOnItemClickListener((adapterView, view, i, l) ->
+			composeMessage(messages.getItem(i).split("\n", 2)[1]));
+		binding.messages.setOnItemLongClickListener((adapterView, view, i, l) -> {
+			transmitMessage(messages.getItem(i).split("\n", 2)[1]);
+			return true;
+		});
 		initAudioTrack();
 
 		List<String> permissions = new ArrayList<>();
@@ -639,7 +645,7 @@ public class MainActivity extends AppCompatActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_compose) {
-			composeMessage();
+			composeMessage(null);
 			return true;
 		}
 		if (id == R.id.action_set_output_rate_8000) {
@@ -813,10 +819,12 @@ public class MainActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void composeMessage() {
+	private void composeMessage(String temp) {
+		if (temp == null)
+			temp = draft;
 		View view = getLayoutInflater().inflate(R.layout.compose_message, null);
 		EditText edit = view.findViewById(R.id.message);
-		edit.setText(draft);
+		edit.setText(temp);
 		draft = "";
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
 		builder.setTitle(R.string.compose_message);
