@@ -162,17 +162,19 @@ public class MainActivity extends AppCompatActivity {
 				case STATUS_OKAY:
 					break;
 				case STATUS_FAIL:
-					addMessage(getString(R.string.decoder_status), getString(R.string.preamble_fail));
+					showToast(getString(R.string.preamble_fail));
 					break;
 				case STATUS_NOPE:
 					cachedDecoder(cachedCFO, cachedMode, cachedCall);
-					addMessage(fromTitle(), getString(R.string.preamble_nope));
+					showToast(fromToast());
+					addMessage(fromTitle(), getString(R.string.preamble_nope, cachedMode[0]));
 					break;
 				case STATUS_HEAP:
 					addMessage(getString(R.string.decoder_status), getString(R.string.heap_error));
 					break;
 				case STATUS_SYNC:
 					cachedDecoder(cachedCFO, cachedMode, cachedCall);
+					showToast(fromToast());
 					break;
 				case STATUS_DONE:
 					if (fetchDecoder(payload)) {
@@ -200,16 +202,20 @@ public class MainActivity extends AppCompatActivity {
 		return new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date());
 	}
 
+	private String fromToast() {
+		return getString(R.string.from_toast, new String(cachedCall).trim(), cachedMode[0], cachedCFO[0]);
+	}
+
 	private String fromTitle() {
-		return getString(R.string.from_title, new String(cachedCall).trim(), cachedMode[0], cachedCFO[0]);
+		return getString(R.string.from_title, new String(cachedCall).trim());
 	}
 
 	private String sentTitle() {
-		return getString(R.string.sent_title, callSign.trim(), operationMode, carrierFrequency);
+		return getString(R.string.sent_title, callSign.trim());
 	}
 
 	private String repeatTitle() {
-		return getString(R.string.repeat_title, new String(cachedCall).trim(), operationMode, carrierFrequency);
+		return getString(R.string.repeat_title, new String(cachedCall).trim());
 	}
 
 	private void addMessage(String title, String mesg) {

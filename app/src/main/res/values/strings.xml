@@ -53,11 +53,12 @@
 	<string name="decoder_status">Decoder Status</string>
 	<string name="encoder_status">Encoder Status</string>
 	<string name="title_message">%1$s - %2$s\n%3$s</string>
-	<string name="from_title">From %1$s - Mode %2$d - CFO %3$.2f Hz</string>
-	<string name="sent_title">Sent %1$s - Mode %2$d - CFO %3$d Hz</string>
-	<string name="repeat_title">Repeat %1$s - Mode %2$d - CFO %3$d Hz</string>
+	<string name="from_toast">From %1$s - Mode %2$d - CFO %3$.2f Hz</string>
+	<string name="from_title">From %1$s</string>
+	<string name="sent_title">Sent %1$s</string>
+	<string name="repeat_title">Repeat %1$s</string>
 	<string name="preamble_fail">Preamble failure</string>
-	<string name="preamble_nope">Ignoring preamble</string>
+	<string name="preamble_nope">Ignoring mode %1$d preamble</string>
 	<string name="heap_error">Not enough memory</string>
 	<string name="decoding_failed">Decoding failed</string>
 	<string name="payload_unknown">Payload unknown</string>
