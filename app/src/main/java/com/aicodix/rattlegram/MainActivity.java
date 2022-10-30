@@ -176,9 +176,10 @@ public class MainActivity extends AppCompatActivity {
 					break;
 				case STATUS_DONE:
 					if (fetchDecoder(payload)) {
-						addMessage(fromTitle(), new String(payload).trim());
 						if (repeaterMode)
 							repeatMessage();
+						else
+							addMessage(fromTitle(), new String(payload).trim());
 					} else {
 						addMessage(fromTitle(), getString(R.string.decoding_failed));
 					}
