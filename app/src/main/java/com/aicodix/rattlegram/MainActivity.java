@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private final int permissionID = 1;
-	private final int operationMode = 14;
 	private final int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
 	private final int sampleSize = 2;
 	private AudioRecord audioRecord;
