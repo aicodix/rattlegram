@@ -218,3 +218,32 @@ Java_com_aicodix_rattlegram_MainActivity_processDecoder(
 
 	return status;
 }
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_aicodix_rattlegram_MainActivity_spectrumDecoder(
+	JNIEnv *env,
+	jobject,
+	jintArray JNI_spectrumPixels,
+	jintArray JNI_spectrogramPixels) {
+
+	if (!decoder)
+		return;
+
+	jint *spectrumPixels, *spectrogramPixels;
+	spectrumPixels = env->GetIntArrayElements(JNI_spectrumPixels, nullptr);
+	if (!spectrumPixels)
+		goto spectrumFail;
+	spectrogramPixels = env->GetIntArrayElements(JNI_spectrogramPixels, nullptr);
+	if (!spectrogramPixels)
+		goto spectrogramFail;
+
+	decoder->spectrum(
+		reinterpret_cast<uint32_t *>(spectrumPixels),
+		reinterpret_cast<uint32_t *>(spectrogramPixels));
+
+	env->ReleaseIntArrayElements(JNI_spectrogramPixels, spectrogramPixels, 0);
+	spectrogramFail:
+	env->ReleaseIntArrayElements(JNI_spectrumPixels, spectrumPixels, 0);
+	spectrumFail:;
+}
+

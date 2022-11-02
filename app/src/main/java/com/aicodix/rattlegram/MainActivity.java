@@ -17,6 +17,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -31,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
@@ -54,11 +58,17 @@ public class MainActivity extends AppCompatActivity {
 	private final int permissionID = 1;
 	private final int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
 	private final int sampleSize = 2;
+	private final int spectrumWidth = 360, spectrumHeight = 128;
+	private final int spectrogramWidth = 360, spectrogramHeight = 128;
+	private Bitmap spectrumBitmap, spectrogramBitmap;
+	private int[] spectrumPixels, spectrogramPixels;
+	private ImageView spectrumView, spectrogramView;
 	private AudioRecord audioRecord;
 	private AudioTrack audioTrack;
 	private boolean fancyHeader;
 	private boolean repeaterMode;
 	private boolean recordStatus;
+	private boolean showSpectrum;
 	private int noiseSymbols;
 	private int recordRate;
 	private int outputRate;
@@ -133,6 +143,8 @@ public class MainActivity extends AppCompatActivity {
 
 	private native int processDecoder(short[] audioBuffer, int channelSelect);
 
+	private native void spectrumDecoder(int[] spectrumPixels, int[] spectrogramPixels);
+
 	private native void cachedDecoder(float[] carrierFrequencyOffset, int[] operationMode, byte[] callSign);
 
 	private native boolean fetchDecoder(byte[] payload);
@@ -151,6 +163,13 @@ public class MainActivity extends AppCompatActivity {
 		public void onPeriodicNotification(AudioRecord audioRecord) {
 			audioRecord.read(recordBuffer, 0, recordBuffer.length);
 			int status = processDecoder(recordBuffer, recordChannel);
+			if (showSpectrum) {
+				spectrumDecoder(spectrumPixels, spectrogramPixels);
+				spectrumBitmap.setPixels(spectrumPixels, 0, spectrumWidth, 0, 0, spectrumWidth, spectrumHeight);
+				spectrogramBitmap.setPixels(spectrogramPixels, 0, spectrogramWidth, 0, 0, spectrogramWidth, spectrogramHeight);
+				spectrumView.invalidate();
+				spectrogramView.invalidate();
+			}
 			final int STATUS_OKAY = 0;
 			final int STATUS_FAIL = 1;
 			final int STATUS_SYNC = 2;
@@ -753,6 +772,10 @@ public class MainActivity extends AppCompatActivity {
 			}
 			return false;
 		}
+		if (id == R.id.action_show_spectrum) {
+			spectrumAnalyzer();
+			return true;
+		}
 		if (id == R.id.action_edit_call_sign) {
 			editCallSign();
 			return true;
@@ -823,6 +846,28 @@ public class MainActivity extends AppCompatActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void spectrumAnalyzer() {
+		View view = getLayoutInflater().inflate(R.layout.spectrum_analyzer, null);
+		spectrogramView = view.findViewById(R.id.spectrogram);
+		spectrumView = view.findViewById(R.id.spectrum);
+		ColorStateList tint = ContextCompat.getColorStateList(this, R.color.tint);
+		spectrumView.setImageTintList(tint);
+		spectrumView.setImageTintMode(PorterDuff.Mode.SRC_IN);
+		spectrumBitmap = Bitmap.createBitmap(spectrumWidth, spectrumHeight, Bitmap.Config.ARGB_8888);
+		spectrogramBitmap = Bitmap.createBitmap(spectrogramWidth, spectrogramHeight, Bitmap.Config.ARGB_8888);
+		spectrumView.setImageBitmap(spectrumBitmap);
+		spectrogramView.setImageBitmap(spectrogramBitmap);
+		spectrumPixels = new int[spectrumWidth * spectrumHeight];
+		spectrogramPixels = new int[spectrogramWidth * spectrogramHeight];
+		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
+		builder.setTitle(R.string.spectrum_analyzer);
+		builder.setView(view);
+		builder.setNeutralButton(R.string.close, (dialogInterface, i) -> showSpectrum = false);
+		builder.setOnCancelListener(dialogInterface -> showSpectrum = false);
+		builder.show();
+		showSpectrum = true;
 	}
 
 	private void composeMessage(String temp) {

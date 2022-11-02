@@ -52,6 +52,9 @@
 	<string name="recorder_status">Recorder Status</string>
 	<string name="decoder_status">Decoder Status</string>
 	<string name="encoder_status">Encoder Status</string>
+	<string name="spectrum_analyzer">Spectrum Analyzer</string>
+	<string name="spectrum_description">Spectrum of audio signal</string>
+	<string name="spectrogram_description">Spectrogram of audio signal</string>
 	<string name="title_message">%1$s - %2$s\n%3$s</string>
 	<string name="from_toast">From %1$s - Mode %2$d - CFO %3$.2f Hz</string>
 	<string name="from_title">From %1$s</string>
@@ -65,7 +68,7 @@
 	<string name="privacy_policy">Privacy Policy</string>
 	<string name="privacy_policy_text">To be able to decode COFDMTV encoded text messages, the app needs access to the microphone.
 Having access to the microphone is considered to be a sensitive permission and you have the right to know what the app does with that access:
-The data recorded from the microphone is only used to feed the COFDMTV decoder.
+The data recorded from the microphone is only used to feed the COFDMTV decoder and spectrum analyzer for the visualization of its frequency content.
 The app uses a very small temporary buffer in volatile memory and constantly overwrites this buffer with new data from the microphone.
 The resulting text message from the COFDMTV decoder is the only data that gets stored in persistent storage on your Android device.</string>
 	<string name="about">About Rattlegram</string>

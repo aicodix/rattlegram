@@ -16,12 +16,17 @@ namespace DSP { using std::abs; using std::min; using std::cos; using std::sin; 
 #include "bip_buffer.hh"
 #include "theil_sen.hh"
 #include "xorshift.hh"
+#include "decibel.hh"
 #include "complex.hh"
 #include "hilbert.hh"
 #include "blockdc.hh"
+#include "filter.hh"
+#include "window.hh"
+#include "coeffs.hh"
 #include "bitman.hh"
 #include "phasor.hh"
 #include "const.hh"
+#include "image.hh"
 #include "polar.hh"
 #include "fft.hh"
 #include "mls.hh"
@@ -39,6 +44,8 @@ namespace DSP { using std::abs; using std::min; using std::cos; using std::sin; 
 struct DecoderInterface {
 	virtual int process(const int16_t *, int) = 0;
 
+	virtual void spectrum(uint32_t *, uint32_t *) = 0;
+
 	virtual void cached(float *, int32_t *, int8_t *) = 0;
 
 	virtual bool fetch(uint8_t *) = 0;
@@ -53,6 +60,8 @@ class Decoder : public DecoderInterface {
 	typedef DSP::Complex<float> cmplx;
 	typedef DSP::Const<float> Const;
 	typedef int8_t code_type;
+	static const int spectrum_width = 360, spectrum_height = 128;
+	static const int spectrogram_width = 360, spectrogram_height = 128;
 	static const int code_order = 11;
 	static const int mod_bits = 2;
 	static const int code_len = 1 << code_order;
@@ -61,6 +70,9 @@ class Decoder : public DecoderInterface {
 	static const int guard_length = symbol_length / 8;
 	static const int extended_length = symbol_length + guard_length;
 	static const int filter_length = (((21 * RATE) / 8000) & ~3) | 1;
+	static const int stft_length = extended_length / 2;
+	static const int window_length = 2 * stft_length;
+	static const int dB_min = -96, dB_max = 0;
 	static const int data_bits = 1360;
 	static const int cor_seq_len = 127;
 	static const int cor_seq_off = 1 - cor_seq_len;
@@ -73,17 +85,21 @@ class Decoder : public DecoderInterface {
 	static const int buffer_length = 4 * extended_length;
 	static const int search_position = extended_length;
 	DSP::FastFourierTransform<symbol_length, cmplx, -1> fwd;
+	DSP::FastFourierTransform<stft_length, cmplx, -1> stft;
 	SchmidlCox<float, cmplx, search_position, symbol_length / 2, guard_length> correlator;
 	DSP::BlockDC<float, float> block_dc;
 	DSP::Hilbert<cmplx, filter_length> hilbert;
 	DSP::BipBuffer<cmplx, buffer_length> buffer;
 	DSP::TheilSenEstimator<float, pay_car_cnt> tse;
 	DSP::Phasor<cmplx> osc;
+	DSP::Hann<float> hann;
+	DSP::LowPass2<float> lowpass;
+	DSP::Coeffs<window_length, float, true> window;
 	CODE::CRC<uint16_t> crc;
 	CODE::OrderedStatisticsDecoder<255, 71, 2> osd;
 	PolarDecoder<code_type> polar;
 	cmplx temp[extended_length], freq[symbol_length], prev[pay_car_cnt], cons[pay_car_cnt];
-	float index[pay_car_cnt]{}, phase[pay_car_cnt]{};
+	float power[spectrum_width]{}, index[pay_car_cnt]{}, phase[pay_car_cnt]{};
 	code_type code[code_len];
 	int8_t generator[255 * 71];
 	int8_t soft[pre_seq_len];
@@ -92,6 +108,28 @@ class Decoder : public DecoderInterface {
 	int symbol_position = search_position + extended_length;
 	int cached_mode = 0;
 	uint64_t cached_call = 0;
+	const cmplx *buf;
+
+	static uint32_t argb(float a, float r, float g, float b) {
+		a = std::clamp<float>(a, 0, 1);
+		r = std::clamp<float>(r, 0, 1);
+		g = std::clamp<float>(g, 0, 1);
+		b = std::clamp<float>(b, 0, 1);
+		r = std::sqrt(r);
+		g = std::sqrt(g);
+		b = std::sqrt(b);
+		int A = (int) std::nearbyint(255 * a);
+		int R = (int) std::nearbyint(255 * r);
+		int G = (int) std::nearbyint(255 * g);
+		int B = (int) std::nearbyint(255 * b);
+		return (A << 24) | (R << 16) | (G << 8) | (B << 0);
+	}
+
+	static uint32_t rainbow(float v) {
+		v = std::clamp<float>(v, 0, 1);
+		float t = 4 * v - 2;
+		return argb(4 * v, t, 1 - std::abs(t), -t);
+	}
 
 	static int bin(int carrier) {
 		return (carrier + symbol_length) % symbol_length;
@@ -154,6 +192,22 @@ class Decoder : public DecoderInterface {
 		return buffer(analytic(samples[i] / 32768.f));
 	}
 
+	void update_spectrum(uint32_t *pixels) {
+		Image<uint32_t, spectrum_width, spectrum_height> img(pixels);
+		img.fill(0);
+		auto pos = [this, img](int i) {
+			return (int) std::nearbyint((1 - power[i]) * (img.height - 1));
+		};
+		for (int i = 1, j = pos(0), k; i < img.width; ++i, j = k)
+			img.line(i - 1, j, i, k = pos(i), -1);
+	}
+
+	void update_spectrogram(uint32_t *pixels) {
+		std::memmove(pixels + spectrogram_width, pixels, sizeof(uint32_t) * spectrogram_width * (spectrogram_height - 1));
+		for (int i = 0; i < spectrogram_width; ++i)
+			pixels[i] = rainbow(power[i]);
+	}
+
 	void compensate() {
 		int count = 0;
 		for (int i = 0; i < pay_car_cnt; ++i) {
@@ -190,7 +244,7 @@ class Decoder : public DecoderInterface {
 			mod_soft(code + mod_bits * (symbol_number * pay_car_cnt + i), cons[i], pre);
 	}
 
-	int preamble(const cmplx *buf) {
+	int preamble() {
 		DSP::Phasor<cmplx> nco;
 		nco.omega(-correlator.cfo_rad);
 		for (int i = 0; i < symbol_length; ++i)
@@ -224,7 +278,7 @@ class Decoder : public DecoderInterface {
 	}
 
 public:
-	Decoder() : correlator(corSeq()), crc(0xA8F4) {
+	Decoder() : correlator(corSeq()), crc(0xA8F4), lowpass(1, symbol_length), window(&hann, &lowpass) {
 		CODE::BoseChaudhuriHocquenghemGenerator<255, 71>::matrix(generator, true, {
 			0b100011101, 0b101110111, 0b111110011, 0b101101001,
 			0b110111101, 0b111100111, 0b100101011, 0b111010111,
@@ -256,11 +310,10 @@ public:
 
 	int process(const int16_t *audio_buffer, int channel_select) final {
 		int status = STATUS_OKAY;
-		const cmplx *buf;
 		for (int i = 0; i < extended_length; ++i) {
 			buf = next_sample(audio_buffer, channel_select, i);
 			if (correlator(buf)) {
-				status = preamble(buf);
+				status = preamble();
 				if (status == STATUS_OKAY) {
 					osc.omega(-correlator.cfo_rad);
 					symbol_position = correlator.symbol_pos + i;
@@ -285,5 +338,19 @@ public:
 				prev[i] = freq[bin(i + pay_car_off)];
 		}
 		return status;
+	}
+
+	void spectrum(uint32_t *spectrum_pixels, uint32_t *spectrogram_pixels) final {
+		for (int j = 0; j < 2; ++j) {
+			for (int i = 0; i < stft_length; ++i)
+				temp[i] = 0;
+			for (int i = 0; i < window_length; ++i)
+				temp[i % stft_length] += window[i] * buf[buffer_length - window_length + stft_length * (j - 1) + i];
+			stft(freq, temp);
+			for (int i = 0; i < spectrum_width; ++i)
+				power[i] = std::clamp<float>((DSP::decibel(norm(freq[i])) - dB_min) / (dB_max - dB_min), 0, 1);
+			update_spectrogram(spectrogram_pixels);
+		}
+		update_spectrum(spectrum_pixels);
 	}
 };

@@ -4,10 +4,10 @@
 	tools:context="com.aicodix.rattlegram.MainActivity">
 	<item
 		android:id="@+id/action_recorder_status"
+		android:enabled="false"
 		android:icon="@drawable/ic_baseline_mic_off_24"
 		android:title="@string/recorder_status"
 		app:iconTint="@color/tint"
-		android:enabled="false"
 		app:showAsAction="always" />
 	<item
 		android:id="@+id/action_compose"
@@ -162,6 +162,9 @@
 					</group>
 				</menu>
 			</item>
+			<item
+				android:id="@+id/action_show_spectrum"
+				android:title="@string/spectrum_analyzer" />
 		</menu>
 	</item>
 	<item android:title="@string/repeater_mode">
