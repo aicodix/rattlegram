@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -461,6 +462,32 @@ public class MainActivity extends AppCompatActivity {
 		}
 		if (!permissions.isEmpty())
 			ActivityCompat.requestPermissions(this, permissions.toArray(new String[0]), permissionID);
+
+		String message = extractIntent(getIntent());
+		if (message != null)
+			composeMessage(message);
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		String message = extractIntent(intent);
+		if (message != null)
+			composeMessage(message);
+	}
+
+	private String extractIntent(Intent intent) {
+		String action = intent.getAction();
+		if (action == null)
+			return null;
+		if (!action.equals(Intent.ACTION_SEND))
+			return null;
+		String type = intent.getType();
+		if (type == null)
+			return null;
+		if (!type.equals("text/plain"))
+			return null;
+		return intent.getStringExtra(Intent.EXTRA_TEXT);
 	}
 
 	private void setRecordStatus(boolean okay) {
