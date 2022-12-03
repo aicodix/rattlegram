@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private String currentTime() {
-		return new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date());
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(new Date());
 	}
 
 	private String fromToast() {
