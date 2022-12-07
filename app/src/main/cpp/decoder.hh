@@ -46,7 +46,7 @@ struct DecoderInterface {
 
 	virtual void spectrum(uint32_t *, uint32_t *) = 0;
 
-	virtual void cached(float *, int32_t *, int8_t *) = 0;
+	virtual void staged(float *, int32_t *, int8_t *) = 0;
 
 	virtual bool fetch(uint8_t *) = 0;
 
@@ -106,8 +106,8 @@ class Decoder : public DecoderInterface {
 	uint8_t data[(pre_seq_len + 7) / 8];
 	int symbol_number = symbol_count;
 	int symbol_position = search_position + extended_length;
-	int cached_mode = 0;
-	uint64_t cached_call = 0;
+	int staged_mode = 0;
+	uint64_t staged_call = 0;
 	const cmplx *buf;
 
 	static uint32_t argb(float a, float r, float g, float b) {
@@ -266,12 +266,12 @@ class Decoder : public DecoderInterface {
 		crc.reset();
 		if (crc(md << 9) != cs)
 			return STATUS_FAIL;
-		cached_mode = md & 255;
-		cached_call = md >> 8;
-		if (cached_mode != 14)
+		staged_mode = md & 255;
+		staged_call = md >> 8;
+		if (staged_mode != 14)
 			return STATUS_NOPE;
-		if (cached_call == 0 || cached_call >= 129961739795077L) {
-			cached_call = 0;
+		if (staged_call == 0 || staged_call >= 129961739795077L) {
+			staged_call = 0;
 			return STATUS_NOPE;
 		}
 		return STATUS_OKAY;
@@ -294,10 +294,10 @@ public:
 		return RATE;
 	}
 
-	void cached(float *cfo, int32_t *mode, int8_t *call) final {
+	void staged(float *cfo, int32_t *mode, int8_t *call) final {
 		*cfo = correlator.cfo_rad * (RATE / Const::TwoPi());
-		*mode = cached_mode;
-		base37(call, cached_call, 9);
+		*mode = staged_mode;
+		base37(call, staged_call, 9);
 	}
 
 	bool fetch(uint8_t *payload) final {

@@ -156,7 +156,7 @@ Java_com_aicodix_rattlegram_MainActivity_fetchDecoder(
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_aicodix_rattlegram_MainActivity_cachedDecoder(
+Java_com_aicodix_rattlegram_MainActivity_stagedDecoder(
 	JNIEnv *env,
 	jobject,
 	jfloatArray JNI_carrierFrequencyOffset,
@@ -179,7 +179,7 @@ Java_com_aicodix_rattlegram_MainActivity_cachedDecoder(
 	if (!callSign)
 		goto callSignFail;
 
-	decoder->cached(
+	decoder->staged(
 		reinterpret_cast<float *>(carrierFrequencyOffset),
 		reinterpret_cast<int32_t *>(operationMode),
 		reinterpret_cast<int8_t *>(callSign));

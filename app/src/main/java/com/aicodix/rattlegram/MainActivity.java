@@ -83,9 +83,9 @@ public class MainActivity extends AppCompatActivity {
 	private Menu menu;
 	private byte[] payload;
 	private ArrayAdapter<String> messages;
-	private float[] cachedCFO;
-	private int[] cachedMode;
-	private byte[] cachedCall;
+	private float[] stagedCFO;
+	private int[] stagedMode;
+	private byte[] stagedCall;
 	private String callSign;
 	private String draft;
 
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private native void spectrumDecoder(int[] spectrumPixels, int[] spectrogramPixels);
 
-	private native void cachedDecoder(float[] carrierFrequencyOffset, int[] operationMode, byte[] callSign);
+	private native void stagedDecoder(float[] carrierFrequencyOffset, int[] operationMode, byte[] callSign);
 
 	private native boolean fetchDecoder(byte[] payload);
 
@@ -184,15 +184,15 @@ public class MainActivity extends AppCompatActivity {
 					showToast(getString(R.string.preamble_fail));
 					break;
 				case STATUS_NOPE:
-					cachedDecoder(cachedCFO, cachedMode, cachedCall);
+					stagedDecoder(stagedCFO, stagedMode, stagedCall);
 					showToast(fromToast());
-					addMessage(fromTitle(), getString(R.string.preamble_nope, cachedMode[0]));
+					addMessage(fromTitle(), getString(R.string.preamble_nope, stagedMode[0]));
 					break;
 				case STATUS_HEAP:
 					addMessage(getString(R.string.decoder_status), getString(R.string.heap_error));
 					break;
 				case STATUS_SYNC:
-					cachedDecoder(cachedCFO, cachedMode, cachedCall);
+					stagedDecoder(stagedCFO, stagedMode, stagedCall);
 					showToast(fromToast());
 					break;
 				case STATUS_DONE:
@@ -222,11 +222,11 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private String fromToast() {
-		return getString(R.string.from_toast, new String(cachedCall).trim(), cachedMode[0], cachedCFO[0]);
+		return getString(R.string.from_toast, new String(stagedCall).trim(), stagedMode[0], stagedCFO[0]);
 	}
 
 	private String fromTitle() {
-		return getString(R.string.from_title, new String(cachedCall).trim());
+		return getString(R.string.from_title, new String(stagedCall).trim());
 	}
 
 	private String sentTitle() {
@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private String repeatTitle() {
-		return getString(R.string.repeat_title, new String(cachedCall).trim());
+		return getString(R.string.repeat_title, new String(stagedCall).trim());
 	}
 
 	private void addMessage(String title, String mesg) {
@@ -439,9 +439,9 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(state);
 		ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
-		cachedCFO = new float[1];
-		cachedMode = new int[1];
-		cachedCall = new byte[10];
+		stagedCFO = new float[1];
+		stagedMode = new int[1];
+		stagedCall = new byte[10];
 		payload = new byte[170];
 		binding.messages.setAdapter(messages);
 		binding.messages.setOnItemClickListener((adapterView, view, i, l) ->
@@ -926,7 +926,7 @@ public class MainActivity extends AppCompatActivity {
 	private void repeatMessage() {
 		stopListening();
 		addMessage(repeatTitle(), new String(payload).trim());
-		configureEncoder(payload, cachedCall, carrierFrequency, noiseSymbols, fancyHeader);
+		configureEncoder(payload, stagedCall, carrierFrequency, noiseSymbols, fancyHeader);
 		audioTrack.write(new short[bufferLength], 0, bufferLength);
 		audioTrack.play();
 	}
