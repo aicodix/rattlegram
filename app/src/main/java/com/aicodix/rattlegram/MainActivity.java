@@ -246,12 +246,6 @@ public class MainActivity extends AppCompatActivity {
 		addString(getString(R.string.title_message, currentTime(), title, mesg));
 	}
 
-	private void addMessage(String mesg) {
-		// TODO remove test for recorder status in the future
-		if (mesg != null && !mesg.split("\n", 2)[0].endsWith(getString(R.string.recorder_status)))
-			messages.add(mesg);
-	}
-
 	private void addString(String str) {
 		int count = 100;
 		if (messages.getCount() >= count)
@@ -422,8 +416,11 @@ public class MainActivity extends AppCompatActivity {
 			callSign = pref.getString("callSign", defaultCallSign);
 			fancyHeader = pref.getBoolean("fancyHeader", defaultFancyHeader);
 			repeaterMode = pref.getBoolean("repeaterMode", defaultRepeaterMode);
-			for (int i = 0; i < 100; ++i)
-				addMessage(pref.getString("m" + i, null));
+			for (int i = 0; i < 100; ++i) {
+				String mesg = pref.getString("m" + i, null);
+				if (mesg != null)
+					messages.add(mesg);
+			}
 		} else {
 			AppCompatDelegate.setDefaultNightMode(state.getInt("nightMode", AppCompatDelegate.getDefaultNightMode()));
 			outputRate = state.getInt("outputRate", defaultSampleRate);
@@ -436,8 +433,11 @@ public class MainActivity extends AppCompatActivity {
 			callSign = state.getString("callSign", defaultCallSign);
 			fancyHeader = state.getBoolean("fancyHeader", defaultFancyHeader);
 			repeaterMode = state.getBoolean("repeaterMode", defaultRepeaterMode);
-			for (int i = 0; i < 100; ++i)
-				addMessage(state.getString("m" + i, null));
+			for (int i = 0; i < 100; ++i) {
+				String mesg = state.getString("m" + i, null);
+				if (mesg != null)
+					messages.add(mesg);
+			}
 		}
 		super.onCreate(state);
 		ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
