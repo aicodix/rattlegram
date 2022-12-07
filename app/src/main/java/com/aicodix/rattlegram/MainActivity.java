@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 	private int audioSource;
 	private int carrierFrequency;
 	private int bufferLength;
+	private int recordCount;
 	private short[] recordBuffer;
 	private short[] outputBuffer;
 	private Menu menu;
@@ -142,7 +143,9 @@ public class MainActivity extends AppCompatActivity {
 			addMessage(getString(R.string.encoder_status), getString(R.string.heap_error));
 	}
 
-	private native int processDecoder(short[] audioBuffer, int channelSelect);
+	private native boolean feedDecoder(short[] audioBuffer, int sampleCount, int channelSelect);
+
+	private native int processDecoder();
 
 	private native void spectrumDecoder(int[] spectrumPixels, int[] spectrogramPixels);
 
@@ -163,7 +166,9 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public void onPeriodicNotification(AudioRecord audioRecord) {
 			audioRecord.read(recordBuffer, 0, recordBuffer.length);
-			int status = processDecoder(recordBuffer, recordChannel);
+			if (!feedDecoder(recordBuffer, recordCount, recordChannel))
+				return;
+			int status = processDecoder();
 			if (showSpectrum) {
 				spectrumDecoder(spectrumPixels, spectrogramPixels);
 				spectrumBitmap.setPixels(spectrumPixels, 0, spectrumWidth, 0, 0, spectrumWidth, spectrumHeight);
@@ -292,17 +297,15 @@ public class MainActivity extends AppCompatActivity {
 		}
 		int frameSize = sampleSize * channelCount;
 		int bufferSize = 2 * Integer.highestOneBit(3 * recordRate) * frameSize;
-		int symbolLength = (1280 * recordRate) / 8000;
-		int guardLength = symbolLength / 8;
-		int extendedLength = symbolLength + guardLength;
 		try {
 			AudioRecord testAudioRecord = new AudioRecord(audioSource, recordRate, channelConfig, audioFormat, bufferSize);
 			if (testAudioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
 				if (createDecoder(recordRate)) {
 					audioRecord = testAudioRecord;
-					recordBuffer = new short[extendedLength * channelCount];
+					recordCount = recordRate / 50;
+					recordBuffer = new short[recordCount * channelCount];
 					audioRecord.setRecordPositionUpdateListener(recordListener);
-					audioRecord.setPositionNotificationPeriod(extendedLength);
+					audioRecord.setPositionNotificationPeriod(recordCount);
 					if (restart)
 						startListening();
 				} else {

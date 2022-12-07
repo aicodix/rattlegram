@@ -182,7 +182,7 @@ Java_com_aicodix_rattlegram_MainActivity_stagedDecoder(
 	decoder->staged(
 		reinterpret_cast<float *>(carrierFrequencyOffset),
 		reinterpret_cast<int32_t *>(operationMode),
-		reinterpret_cast<int8_t *>(callSign));
+		reinterpret_cast<uint8_t *>(callSign));
 
 	env->ReleaseByteArrayElements(JNI_callSign, callSign, 0);
 	callSignFail:
@@ -192,14 +192,15 @@ Java_com_aicodix_rattlegram_MainActivity_stagedDecoder(
 	carrierFrequencyOffsetFail:;
 }
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_aicodix_rattlegram_MainActivity_processDecoder(
+extern "C" JNIEXPORT jboolean JNICALL
+Java_com_aicodix_rattlegram_MainActivity_feedDecoder(
 	JNIEnv *env,
 	jobject,
 	jshortArray JNI_audioBuffer,
+	jint sampleCount,
 	jint channelSelect) {
 
-	jint status = STATUS_HEAP;
+	jboolean status = false;
 
 	if (!decoder)
 		return status;
@@ -209,14 +210,25 @@ Java_com_aicodix_rattlegram_MainActivity_processDecoder(
 	if (!audioBuffer)
 		goto audioBufferFail;
 
-	status = decoder->process(
+	status = decoder->feed(
 		reinterpret_cast<int16_t *>(audioBuffer),
-		channelSelect);
+		sampleCount, channelSelect);
 
 	env->ReleaseShortArrayElements(JNI_audioBuffer, audioBuffer, JNI_ABORT);
 	audioBufferFail:
 
 	return status;
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_com_aicodix_rattlegram_MainActivity_processDecoder(
+	JNIEnv *env,
+	jobject) {
+
+	if (!decoder)
+		return STATUS_HEAP;
+
+	return decoder->process();
 }
 
 extern "C" JNIEXPORT void JNICALL

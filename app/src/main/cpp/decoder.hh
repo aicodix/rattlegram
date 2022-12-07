@@ -42,11 +42,13 @@ namespace DSP { using std::abs; using std::min; using std::cos; using std::sin; 
 #define STATUS_NOPE 5
 
 struct DecoderInterface {
-	virtual int process(const int16_t *, int) = 0;
+	virtual bool feed(const int16_t *, int, int) = 0;
+
+	virtual int process() = 0;
 
 	virtual void spectrum(uint32_t *, uint32_t *) = 0;
 
-	virtual void staged(float *, int32_t *, int8_t *) = 0;
+	virtual void staged(float *, int32_t *, uint8_t *) = 0;
 
 	virtual bool fetch(uint8_t *) = 0;
 
@@ -106,8 +108,15 @@ class Decoder : public DecoderInterface {
 	uint8_t data[(pre_seq_len + 7) / 8];
 	int symbol_number = symbol_count;
 	int symbol_position = search_position + extended_length;
+	int stored_position = 0;
+	int staged_position = 0;
 	int staged_mode = 0;
+	int accumulated = 0;
+	float stored_cfo_rad = 0;
+	float staged_cfo_rad = 0;
 	uint64_t staged_call = 0;
+	bool stored_check = false;
+	bool staged_check = false;
 	const cmplx *buf;
 
 	static uint32_t argb(float a, float r, float g, float b) {
@@ -151,7 +160,7 @@ class Decoder : public DecoderInterface {
 		PhaseShiftKeying<4, cmplx, code_type>::soft(b, c, precision);
 	}
 
-	static void base37(int8_t *str, uint64_t val, int len) {
+	static void base37(uint8_t *str, uint64_t val, int len) {
 		for (int i = len - 1; i >= 0; --i, val /= 37)
 			str[i] = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[val % 37];
 	}
@@ -178,18 +187,18 @@ class Decoder : public DecoderInterface {
 		return hilbert(block_dc(real));
 	}
 
-	const cmplx *next_sample(const int16_t *samples, int channel, int i) {
+	cmplx convert(const int16_t *samples, int channel, int i) {
 		switch (channel) {
 			case 1:
-				return buffer(analytic(samples[2 * i] / 32768.f));
+				return analytic(samples[2 * i] / 32768.f);
 			case 2:
-				return buffer(analytic(samples[2 * i + 1] / 32768.f));
+				return analytic(samples[2 * i + 1] / 32768.f);
 			case 3:
-				return buffer(analytic(((int) samples[2 * i] + (int) samples[2 * i + 1]) / 65536.f));
+				return analytic(((int) samples[2 * i] + (int) samples[2 * i + 1]) / 65536.f);
 			case 4:
-				return buffer(cmplx(samples[2 * i], samples[2 * i + 1]) / 32768.f);
+				return cmplx(samples[2 * i], samples[2 * i + 1]) / 32768.f;
 		}
-		return buffer(analytic(samples[i] / 32768.f));
+		return analytic(samples[i] / 32768.f);
 	}
 
 	void update_spectrum(uint32_t *pixels) {
@@ -246,9 +255,9 @@ class Decoder : public DecoderInterface {
 
 	int preamble() {
 		DSP::Phasor<cmplx> nco;
-		nco.omega(-correlator.cfo_rad);
+		nco.omega(-staged_cfo_rad);
 		for (int i = 0; i < symbol_length; ++i)
-			temp[i] = buf[correlator.symbol_pos + extended_length + i] * nco();
+			temp[i] = buf[staged_position + i] * nco();
 		fwd(freq, temp);
 		CODE::MLS seq(pre_seq_poly);
 		for (int i = 0; i < pre_seq_len; ++i)
@@ -294,8 +303,8 @@ public:
 		return RATE;
 	}
 
-	void staged(float *cfo, int32_t *mode, int8_t *call) final {
-		*cfo = correlator.cfo_rad * (RATE / Const::TwoPi());
+	void staged(float *cfo, int32_t *mode, uint8_t *call) final {
+		*cfo = staged_cfo_rad * (RATE / Const::TwoPi());
 		*mode = staged_mode;
 		base37(call, staged_call, 9);
 	}
@@ -308,32 +317,54 @@ public:
 		return result;
 	}
 
-	int process(const int16_t *audio_buffer, int channel_select) final {
+	bool feed(const int16_t *audio_buffer, int sample_count, int channel_select) final {
+		assert(sample_count <= extended_length);
+		for (int i = 0; i < sample_count; ++i) {
+			if (correlator(buffer(convert(audio_buffer, channel_select, i)))) {
+				stored_cfo_rad = correlator.cfo_rad;
+				stored_position = correlator.symbol_pos + accumulated;
+				stored_check = true;
+			}
+			if (++accumulated == extended_length)
+				buf = buffer();
+		}
+		if (accumulated >= extended_length) {
+			accumulated -= extended_length;
+			if (stored_check) {
+				staged_cfo_rad = stored_cfo_rad;
+				staged_position = stored_position;
+				staged_check = true;
+				stored_check = false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	int process() final {
 		int status = STATUS_OKAY;
-		for (int i = 0; i < extended_length; ++i) {
-			buf = next_sample(audio_buffer, channel_select, i);
-			if (correlator(buf)) {
-				status = preamble();
-				if (status == STATUS_OKAY) {
-					osc.omega(-correlator.cfo_rad);
-					symbol_position = correlator.symbol_pos + i;
-					symbol_number = 0;
-					status = STATUS_SYNC;
-				}
+		if (staged_check) {
+			staged_check = false;
+			status = preamble();
+			if (status == STATUS_OKAY) {
+				osc.omega(-staged_cfo_rad);
+				symbol_position = staged_position;
+				symbol_number = -1;
+				status = STATUS_SYNC;
 			}
 		}
-		if (status == STATUS_SYNC || symbol_number < symbol_count) {
+		if (symbol_number < symbol_count) {
 			for (int i = 0; i < extended_length; ++i)
 				temp[i] = buf[symbol_position + i] * osc();
 			fwd(freq, temp);
-			if (status != STATUS_SYNC) {
+			if (symbol_number >= 0) {
 				for (int i = 0; i < pay_car_cnt; ++i)
 					cons[i] = demod_or_erase(freq[bin(i + pay_car_off)], prev[i]);
 				compensate();
 				demap();
-				if (++symbol_number == symbol_count)
-					status = STATUS_DONE;
 			}
+			if (++symbol_number == symbol_count)
+				status = STATUS_DONE;
 			for (int i = 0; i < pay_car_cnt; ++i)
 				prev[i] = freq[bin(i + pay_car_off)];
 		}
