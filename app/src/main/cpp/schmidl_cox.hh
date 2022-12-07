@@ -44,7 +44,7 @@ class SchmidlCox {
 	}
 
 public:
-	int symbol_pos = 0;
+	int symbol_pos = search_pos;
 	value cfo_rad = 0;
 	value frac_cfo = 0;
 
@@ -83,11 +83,11 @@ public:
 
 		DSP::Phasor<cmplx> osc;
 		osc.omega(frac_cfo);
-		symbol_pos = search_pos - index_max;
+		int test_pos = search_pos - index_max;
 		index_max = 0;
 		timing_max = 0;
 		for (int i = 0; i < symbol_len; ++i)
-			tmp1[i] = samples[i + symbol_pos + symbol_len] * osc();
+			tmp1[i] = samples[i + test_pos + symbol_len] * osc();
 		fwd(tmp0, tmp1);
 		for (int i = 0; i < symbol_len; ++i)
 			tmp1[i] = demod_or_erase(tmp0[i], tmp0[bin(i - 1)]);
@@ -115,7 +115,7 @@ public:
 		int pos_err = std::nearbyint(arg(tmp2[shift]) * symbol_len / Const::TwoPi());
 		if (abs(pos_err) > guard_len / 2)
 			return false;
-		symbol_pos -= pos_err;
+		symbol_pos = test_pos - pos_err;
 
 		cfo_rad = shift * (Const::TwoPi() / symbol_len) - frac_cfo;
 		if (cfo_rad >= Const::Pi())
