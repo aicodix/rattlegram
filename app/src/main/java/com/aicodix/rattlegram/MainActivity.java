@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 		audioTrack.setPlaybackPositionUpdateListener(outputListener);
 		audioTrack.setPositionNotificationPeriod(extendedLength);
 		if (!createEncoder(outputRate))
-			addMessage(getString(R.string.encoder_status), getString(R.string.heap_error));
+			showToast(getString(R.string.heap_error));
 	}
 
 	private native boolean feedDecoder(short[] audioBuffer, int sampleCount, int channelSelect);
@@ -191,10 +191,9 @@ public class MainActivity extends AppCompatActivity {
 				case STATUS_NOPE:
 					stagedDecoder(stagedCFO, stagedMode, stagedCall);
 					showToast(fromToast());
-					addMessage(fromTitle(), getString(R.string.preamble_nope, stagedMode[0]));
+					addStatus(new String(stagedCall).trim(), getString(R.string.preamble_nope, stagedMode[0]));
 					break;
 				case STATUS_HEAP:
-					addMessage(getString(R.string.decoder_status), getString(R.string.heap_error));
 					break;
 				case STATUS_SYNC:
 					stagedDecoder(stagedCFO, stagedMode, stagedCall);
@@ -205,9 +204,9 @@ public class MainActivity extends AppCompatActivity {
 						if (repeaterMode)
 							repeatMessage();
 						else
-							addMessage(fromTitle(), new String(payload).trim());
+							addMessage(new String(stagedCall).trim(), getString(R.string.received), new String(payload).trim());
 					} else {
-						addMessage(fromTitle(), getString(R.string.decoding_failed));
+						addStatus(new String(stagedCall).trim(), getString(R.string.decoding_failed));
 					}
 					break;
 			}
@@ -230,20 +229,12 @@ public class MainActivity extends AppCompatActivity {
 		return getString(R.string.from_toast, new String(stagedCall).trim(), stagedMode[0], stagedCFO[0]);
 	}
 
-	private String fromTitle() {
-		return getString(R.string.from_title, new String(stagedCall).trim());
+	private void addStatus(String call, String info) {
+		addString(getString(R.string.status_line, currentTime(), call, info));
 	}
 
-	private String sentTitle() {
-		return getString(R.string.sent_title, callSign.trim());
-	}
-
-	private String repeatTitle() {
-		return getString(R.string.repeat_title, new String(stagedCall).trim());
-	}
-
-	private void addMessage(String title, String mesg) {
-		addString(getString(R.string.title_message, currentTime(), title, mesg));
+	private void addMessage(String call, String info, String mesg) {
+		addString(getString(R.string.status_message, currentTime(), call, info, mesg));
 	}
 
 	private void addString(String str) {
@@ -304,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
 						startListening();
 				} else {
 					testAudioRecord.release();
-					addMessage(getString(R.string.encoder_status), getString(R.string.heap_error));
+					showToast(getString(R.string.heap_error));
 					setRecordStatus(false);
 				}
 			} else {
@@ -447,10 +438,15 @@ public class MainActivity extends AppCompatActivity {
 		stagedCall = new byte[10];
 		payload = new byte[170];
 		binding.messages.setAdapter(messages);
-		binding.messages.setOnItemClickListener((adapterView, view, i, l) ->
-			composeMessage(messages.getItem(i).split("\n", 2)[1]));
+		binding.messages.setOnItemClickListener((adapterView, view, i, l) -> {
+			String[] mesg = messages.getItem(i).split("\n", 2);
+			if (mesg.length == 2)
+				composeMessage(mesg[1]);
+		});
 		binding.messages.setOnItemLongClickListener((adapterView, view, i, l) -> {
-			transmitMessage(messages.getItem(i).split("\n", 2)[1]);
+			String[] mesg = messages.getItem(i).split("\n", 2);
+			if (mesg.length == 2)
+				transmitMessage(mesg[1]);
 			return true;
 		});
 		initAudioTrack();
@@ -920,7 +916,7 @@ public class MainActivity extends AppCompatActivity {
 	private void transmitMessage(String message) {
 		stopListening();
 		byte[] mesg = Arrays.copyOf(message.getBytes(StandardCharsets.UTF_8), payload.length);
-		addMessage(sentTitle(), new String(mesg).trim());
+		addMessage(callSign.trim(), getString(R.string.transmitted), new String(mesg).trim());
 		configureEncoder(mesg, callTerm(), carrierFrequency, noiseSymbols, fancyHeader);
 		audioTrack.write(new short[bufferLength], 0, bufferLength);
 		audioTrack.play();
@@ -928,7 +924,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private void repeatMessage() {
 		stopListening();
-		addMessage(repeatTitle(), new String(payload).trim());
+		addMessage(new String(stagedCall).trim(), getString(R.string.repeated), new String(payload).trim());
 		configureEncoder(payload, stagedCall, carrierFrequency, noiseSymbols, fancyHeader);
 		audioTrack.write(new short[bufferLength], 0, bufferLength);
 		audioTrack.play();
