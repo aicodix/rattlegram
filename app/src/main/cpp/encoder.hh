@@ -162,8 +162,7 @@ class Encoder : public EncoderInterface {
 		for (int i = 0; i < symbol_length; ++i)
 			freq[i] = 0;
 		for (int i = 0; i < pay_car_cnt; ++i)
-			freq[bin(i + pay_car_off)] = factor *
-						     cmplx(nrz(noise_seq()), nrz(noise_seq()));
+			freq[bin(i + pay_car_off)] = factor * cmplx(nrz(noise_seq()), nrz(noise_seq()));
 		transform(false);
 	}
 
