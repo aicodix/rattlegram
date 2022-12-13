@@ -295,7 +295,7 @@ public:
 			0b100011011, 0b100111111, 0b110001101, 0b100101101,
 			0b101011111, 0b111111001, 0b111000011, 0b100111001,
 			0b110101001, 0b000011111, 0b110000111, 0b110110001});
-		block_dc.samples(2 * extended_length);
+		block_dc.samples(filter_length);
 		osc.omega(-2000, RATE);
 	}
 
