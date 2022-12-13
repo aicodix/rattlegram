@@ -71,7 +71,7 @@ class Decoder : public DecoderInterface {
 	static const int symbol_length = (1280 * RATE) / 8000;
 	static const int guard_length = symbol_length / 8;
 	static const int extended_length = symbol_length + guard_length;
-	static const int filter_length = (((21 * RATE) / 8000) & ~3) | 1;
+	static const int filter_length = (((33 * RATE) / 8000) & ~3) | 1;
 	static const int stft_length = extended_length / 2;
 	static const int window_length = 2 * stft_length;
 	static const int dB_min = -96, dB_max = 0;
