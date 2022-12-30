@@ -28,7 +28,9 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +39,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aicodix.rattlegram.databinding.ActivityMainBinding;
@@ -900,7 +903,29 @@ public class MainActivity extends AppCompatActivity {
 		if (temp == null)
 			temp = draft;
 		View view = getLayoutInflater().inflate(R.layout.compose_message, null);
+		TextView left = view.findViewById(R.id.capacity);
 		EditText edit = view.findViewById(R.id.message);
+		edit.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+				int bytes = charSequence.toString().getBytes().length;
+				if (bytes > 170) {
+					left.setText(getString(R.string.over_capacity, bytes - 170));
+				} else {
+					left.setText(getString(R.string.bytes_left, 170 - bytes));
+				}
+			}
+
+			@Override
+			public void afterTextChanged(Editable editable) {
+
+			}
+		});
 		edit.setText(temp);
 		draft = "";
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);

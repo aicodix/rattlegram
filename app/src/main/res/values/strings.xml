@@ -56,6 +56,8 @@
 	<string name="status_line">%1$s - %2$s - %3$s</string>
 	<string name="status_message">%1$s - %2$s - %3$s:\n%4$s</string>
 	<string name="from_toast">From %1$s - Mode %2$d - CFO %3$.2f Hz</string>
+	<string name="bytes_left">%1$d bytes left</string>
+	<string name="over_capacity">%1$d bytes over capacity</string>
 	<string name="received">Received</string>
 	<string name="transmitted">Transmitted</string>
 	<string name="repeated">Repeated</string>
