@@ -903,8 +903,16 @@ public class MainActivity extends AppCompatActivity {
 		if (temp == null)
 			temp = draft;
 		View view = getLayoutInflater().inflate(R.layout.compose_message, null);
-		TextView left = view.findViewById(R.id.capacity);
 		EditText edit = view.findViewById(R.id.message);
+		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
+		builder.setTitle(R.string.compose_message);
+		builder.setView(view);
+		builder.setNeutralButton(R.string.draft, (dialogInterface, i) -> draft = edit.getText().toString());
+		builder.setNegativeButton(R.string.discard, null);
+		builder.setPositiveButton(R.string.transmit, (dialogInterface, i) -> transmitMessage(edit.getText().toString()));
+		builder.setOnCancelListener(dialogInterface -> draft = edit.getText().toString());
+		AlertDialog dialog = builder.show();
+		TextView left = view.findViewById(R.id.capacity);
 		edit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -917,9 +925,11 @@ public class MainActivity extends AppCompatActivity {
 				if (bytes > 170) {
 					int num = bytes - 170;
 					left.setText(getResources().getQuantityString(R.plurals.over_capacity, num, num));
+					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
 				} else {
 					int num = 170 - bytes;
 					left.setText(getResources().getQuantityString(R.plurals.bytes_left, num, num));
+					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
 				}
 			}
 
@@ -930,14 +940,6 @@ public class MainActivity extends AppCompatActivity {
 		});
 		edit.setText(temp);
 		draft = "";
-		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
-		builder.setTitle(R.string.compose_message);
-		builder.setView(view);
-		builder.setNeutralButton(R.string.draft, (dialogInterface, i) -> draft = edit.getText().toString());
-		builder.setNegativeButton(R.string.discard, null);
-		builder.setPositiveButton(R.string.transmit, (dialogInterface, i) -> transmitMessage(edit.getText().toString()));
-		builder.setOnCancelListener(dialogInterface -> draft = edit.getText().toString());
-		builder.show();
 	}
 
 	private void transmitMessage(String message) {
