@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -913,6 +914,7 @@ public class MainActivity extends AppCompatActivity {
 		builder.setOnCancelListener(dialogInterface -> draft = edit.getText().toString());
 		AlertDialog dialog = builder.show();
 		TextView left = view.findViewById(R.id.capacity);
+		Context context = this;
 		edit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -925,10 +927,12 @@ public class MainActivity extends AppCompatActivity {
 				if (bytes > 170) {
 					int num = bytes - 170;
 					left.setText(getResources().getQuantityString(R.plurals.over_capacity, num, num));
+					left.setTextColor(Color.RED);
 					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
 				} else {
 					int num = 170 - bytes;
 					left.setText(getResources().getQuantityString(R.plurals.bytes_left, num, num));
+					left.setTextColor(ContextCompat.getColor(context, R.color.tint));
 					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
 				}
 			}
