@@ -915,9 +915,11 @@ public class MainActivity extends AppCompatActivity {
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				int bytes = charSequence.toString().getBytes().length;
 				if (bytes > 170) {
-					left.setText(getString(R.string.over_capacity, bytes - 170));
+					int num = bytes - 170;
+					left.setText(getResources().getQuantityString(R.plurals.over_capacity, num, num));
 				} else {
-					left.setText(getString(R.string.bytes_left, 170 - bytes));
+					int num = 170 - bytes;
+					left.setText(getResources().getQuantityString(R.plurals.bytes_left, num, num));
 				}
 			}
 
