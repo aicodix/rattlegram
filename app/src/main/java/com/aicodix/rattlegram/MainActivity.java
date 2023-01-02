@@ -41,7 +41,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.aicodix.rattlegram.databinding.ActivityMainBinding;
 
@@ -68,11 +67,11 @@ public class MainActivity extends AppCompatActivity {
 	private Bitmap spectrumBitmap, spectrogramBitmap;
 	private int[] spectrumPixels, spectrogramPixels;
 	private ImageView spectrumView, spectrogramView;
+	private TextView status;
 	private AudioRecord audioRecord;
 	private AudioTrack audioTrack;
 	private boolean fancyHeader;
 	private boolean repeaterMode;
-	private boolean recordStatus;
 	private boolean showSpectrum;
 	private int noiseSymbols;
 	private int recordRate;
@@ -144,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 		audioTrack.setPlaybackPositionUpdateListener(outputListener);
 		audioTrack.setPositionNotificationPeriod(extendedLength);
 		if (!createEncoder(outputRate))
-			showToast(getString(R.string.heap_error));
+			setStatus(getString(R.string.heap_error));
 	}
 
 	private native boolean feedDecoder(short[] audioBuffer, int sampleCount, int channelSelect);
@@ -190,18 +189,18 @@ public class MainActivity extends AppCompatActivity {
 				case STATUS_OKAY:
 					break;
 				case STATUS_FAIL:
-					showToast(getString(R.string.preamble_fail));
+					setStatus(getString(R.string.preamble_fail));
 					break;
 				case STATUS_NOPE:
 					stagedDecoder(stagedCFO, stagedMode, stagedCall);
-					showToast(fromToast());
-					addStatus(new String(stagedCall).trim(), getString(R.string.preamble_nope, stagedMode[0]));
+					setStatus(fromStatus());
+					addLine(new String(stagedCall).trim(), getString(R.string.preamble_nope, stagedMode[0]));
 					break;
 				case STATUS_HEAP:
 					break;
 				case STATUS_SYNC:
 					stagedDecoder(stagedCFO, stagedMode, stagedCall);
-					showToast(fromToast());
+					setStatus(fromStatus());
 					break;
 				case STATUS_DONE:
 					if (fetchDecoder(payload)) {
@@ -210,15 +209,15 @@ public class MainActivity extends AppCompatActivity {
 						else
 							addMessage(new String(stagedCall).trim(), getString(R.string.received), new String(payload).trim());
 					} else {
-						addStatus(new String(stagedCall).trim(), getString(R.string.decoding_failed));
+						addLine(new String(stagedCall).trim(), getString(R.string.decoding_failed));
 					}
 					break;
 			}
 		}
 	};
 
-	private void showToast(String str) {
-		Toast.makeText(getApplicationContext(), str, Toast.LENGTH_LONG).show();
+	private void setStatus(String str) {
+		status.setText(str);
 	}
 
 	private byte[] callTerm() {
@@ -229,16 +228,16 @@ public class MainActivity extends AppCompatActivity {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(new Date());
 	}
 
-	private String fromToast() {
-		return getString(R.string.from_toast, new String(stagedCall).trim(), stagedMode[0], stagedCFO[0]);
+	private String fromStatus() {
+		return getString(R.string.from_status, new String(stagedCall).trim(), stagedMode[0], stagedCFO[0]);
 	}
 
-	private void addStatus(String call, String info) {
-		addString(getString(R.string.status_line, currentTime(), call, info));
+	private void addLine(String call, String info) {
+		addString(getString(R.string.title_line, currentTime(), call, info));
 	}
 
 	private void addMessage(String call, String info, String mesg) {
-		addString(getString(R.string.status_message, currentTime(), call, info, mesg));
+		addString(getString(R.string.title_message, currentTime(), call, info, mesg));
 	}
 
 	private void addString(String str) {
@@ -253,10 +252,9 @@ public class MainActivity extends AppCompatActivity {
 			audioRecord.startRecording();
 			if (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
 				audioRecord.read(recordBuffer, 0, recordBuffer.length);
-				setRecordStatus(true);
+				setStatus(getString(R.string.listening));
 			} else {
-				showToast(getString(R.string.audio_recording_error));
-				setRecordStatus(false);
+				setStatus(getString(R.string.audio_recording_error));
 			}
 		}
 	}
@@ -264,7 +262,6 @@ public class MainActivity extends AppCompatActivity {
 	private void stopListening() {
 		if (audioRecord != null)
 			audioRecord.stop();
-		setRecordStatus(false);
 	}
 
 	private void initAudioRecord(boolean restart) {
@@ -299,20 +296,16 @@ public class MainActivity extends AppCompatActivity {
 						startListening();
 				} else {
 					testAudioRecord.release();
-					showToast(getString(R.string.heap_error));
-					setRecordStatus(false);
+					setStatus(getString(R.string.heap_error));
 				}
 			} else {
 				testAudioRecord.release();
-				showToast(getString(R.string.audio_init_failed));
-				setRecordStatus(false);
+				setStatus(getString(R.string.audio_init_failed));
 			}
 		} catch (IllegalArgumentException e) {
-			showToast(getString(R.string.audio_setup_failed));
-			setRecordStatus(false);
+			setStatus(getString(R.string.audio_setup_failed));
 		} catch (SecurityException e) {
-			showToast(getString(R.string.audio_permission_denied));
-			setRecordStatus(false);
+			setStatus(getString(R.string.audio_permission_denied));
 		}
 	}
 
@@ -436,6 +429,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 		super.onCreate(state);
 		ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+		status = binding.status;
 		setContentView(binding.getRoot());
 		stagedCFO = new float[1];
 		stagedMode = new int[1];
@@ -458,8 +452,7 @@ public class MainActivity extends AppCompatActivity {
 		List<String> permissions = new ArrayList<>();
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 			permissions.add(Manifest.permission.RECORD_AUDIO);
-			showToast(getString(R.string.audio_permission_denied));
-			setRecordStatus(false);
+			setStatus(getString(R.string.audio_permission_denied));
 		} else {
 			initAudioRecord(false);
 		}
@@ -491,17 +484,6 @@ public class MainActivity extends AppCompatActivity {
 		if (!type.equals("text/plain"))
 			return null;
 		return intent.getStringExtra(Intent.EXTRA_TEXT);
-	}
-
-	private void setRecordStatus(boolean okay) {
-		recordStatus = okay;
-		if (menu != null)
-			updateRecordStatusMenu();
-	}
-
-	private void updateRecordStatusMenu() {
-		int icon = recordStatus ? R.drawable.ic_baseline_mic_24 : R.drawable.ic_baseline_mic_off_24;
-		menu.findItem(R.id.action_recorder_status).setIcon(icon);
 	}
 
 	private void setNoiseSymbols(int newNoiseSymbols) {
@@ -688,7 +670,6 @@ public class MainActivity extends AppCompatActivity {
 		updateOutputChannelMenu();
 		updateRecordRateMenu();
 		updateRecordChannelMenu();
-		updateRecordStatusMenu();
 		updateAudioSourceMenu();
 		updateNoiseSymbolsMenu();
 		updateFancyHeaderMenu();
@@ -953,6 +934,7 @@ public class MainActivity extends AppCompatActivity {
 		configureEncoder(mesg, callTerm(), carrierFrequency, noiseSymbols, fancyHeader);
 		audioTrack.write(new short[bufferLength], 0, bufferLength);
 		audioTrack.play();
+		setStatus(getString(R.string.transmitting));
 	}
 
 	private void repeatMessage() {
@@ -961,6 +943,7 @@ public class MainActivity extends AppCompatActivity {
 		configureEncoder(payload, stagedCall, carrierFrequency, noiseSymbols, fancyHeader);
 		audioTrack.write(new short[bufferLength], 0, bufferLength);
 		audioTrack.play();
+		setStatus(getString(R.string.transmitting));
 	}
 
 	private void setInputType(ViewGroup np, int it) {
