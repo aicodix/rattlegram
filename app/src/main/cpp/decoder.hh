@@ -40,6 +40,7 @@ namespace DSP { using std::abs; using std::min; using std::cos; using std::sin; 
 #define STATUS_DONE 3
 #define STATUS_HEAP 4
 #define STATUS_NOPE 5
+#define STATUS_PING 6
 
 struct DecoderInterface {
 	virtual bool feed(const int16_t *, int, int) = 0;
@@ -277,12 +278,14 @@ class Decoder : public DecoderInterface {
 			return STATUS_FAIL;
 		staged_mode = md & 255;
 		staged_call = md >> 8;
-		if (staged_mode != 14)
+		if (staged_mode && staged_mode != 14)
 			return STATUS_NOPE;
 		if (staged_call == 0 || staged_call >= 129961739795077L) {
 			staged_call = 0;
 			return STATUS_NOPE;
 		}
+		if (!staged_mode)
+			return STATUS_PING;
 		return STATUS_OKAY;
 	}
 

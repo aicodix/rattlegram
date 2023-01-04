@@ -185,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
 			final int STATUS_DONE = 3;
 			final int STATUS_HEAP = 4;
 			final int STATUS_NOPE = 5;
+			final int STATUS_PING = 6;
 			switch (status) {
 				case STATUS_OKAY:
 					break;
@@ -195,6 +196,11 @@ public class MainActivity extends AppCompatActivity {
 					stagedDecoder(stagedCFO, stagedMode, stagedCall);
 					setStatus(fromStatus());
 					addLine(new String(stagedCall).trim(), getString(R.string.preamble_nope, stagedMode[0]));
+					break;
+				case STATUS_PING:
+					stagedDecoder(stagedCFO, stagedMode, stagedCall);
+					setStatus(fromStatus());
+					addLine(new String(stagedCall).trim(), getString(R.string.preamble_ping));
 					break;
 				case STATUS_HEAP:
 					break;

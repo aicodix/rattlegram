@@ -70,6 +70,7 @@
 	<string name="repeated">Repeated</string>
 	<string name="preamble_fail">Preamble failure</string>
 	<string name="preamble_nope">Mode %1$d unsupported</string>
+	<string name="preamble_ping">Got ping</string>
 	<string name="heap_error">Not enough memory</string>
 	<string name="decoding_failed">Decoding failed</string>
 	<string name="payload_unknown">Payload unknown</string>
