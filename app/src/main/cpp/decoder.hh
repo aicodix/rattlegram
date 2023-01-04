@@ -76,7 +76,6 @@ class Decoder : public DecoderInterface {
 	static const int stft_length = extended_length / 2;
 	static const int window_length = 2 * stft_length;
 	static const int dB_min = -96, dB_max = 0;
-	static const int data_bits = 1360;
 	static const int cor_seq_len = 127;
 	static const int cor_seq_off = 1 - cor_seq_len;
 	static const int cor_seq_poly = 0b10001001;
@@ -112,6 +111,7 @@ class Decoder : public DecoderInterface {
 	int stored_position = 0;
 	int staged_position = 0;
 	int staged_mode = 0;
+	int operation_mode = 0;
 	int accumulated = 0;
 	float stored_cfo_rad = 0;
 	float staged_cfo_rad = 0;
@@ -278,7 +278,7 @@ class Decoder : public DecoderInterface {
 			return STATUS_FAIL;
 		staged_mode = md & 255;
 		staged_call = md >> 8;
-		if (staged_mode && staged_mode != 14)
+		if (staged_mode && (staged_mode < 14 || staged_mode > 16))
 			return STATUS_NOPE;
 		if (staged_call == 0 || staged_call >= 129961739795077L) {
 			staged_call = 0;
@@ -313,10 +313,30 @@ public:
 	}
 
 	bool fetch(uint8_t *payload) final {
-		bool result = polar(payload, code);
+		const uint32_t *frozen_bits;
+		int data_bits;
+		switch (operation_mode) {
+			case 14:
+				data_bits = 1360;
+				frozen_bits = frozen_2048_1392;
+				break;
+			case 15:
+				data_bits = 1024;
+				frozen_bits = frozen_2048_1056;
+				break;
+			case 16:
+				data_bits = 680;
+				frozen_bits = frozen_2048_712;
+				break;
+			default:
+				return false;
+		}
+		bool result = polar(payload, code, frozen_bits, data_bits);
 		CODE::Xorshift32 scrambler;
 		for (int i = 0; i < data_bits / 8; ++i)
 			payload[i] ^= scrambler();
+		for (int i = data_bits / 8; i < 170; ++i)
+			payload[i] = 0;
 		return result;
 	}
 
@@ -350,6 +370,7 @@ public:
 			staged_check = false;
 			status = preamble();
 			if (status == STATUS_OKAY) {
+				operation_mode = staged_mode;
 				osc.omega(-staged_cfo_rad);
 				symbol_position = staged_position;
 				symbol_number = -1;

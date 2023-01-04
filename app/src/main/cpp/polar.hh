@@ -20,11 +20,10 @@ Copyright 2022 Ahmet Inan <inan@aicodix.de>
 template<typename code_type>
 class PolarEncoder {
 	static const int code_order = 11;
-	static const int data_bits = 1360;
-	static const int crc_bits = data_bits + 32;
+	static const int max_bits = 1360 + 32;
 	CODE::CRC<uint32_t> crc;
 	CODE::PolarSysEnc<code_type> encode;
-	int8_t mesg[crc_bits];
+	int8_t mesg[max_bits];
 
 	static int nrz(bool bit) {
 		return 1 - 2 * bit;
@@ -33,7 +32,7 @@ class PolarEncoder {
 public:
 	PolarEncoder() : crc(0x8F6E37A0) {}
 
-	void operator()(code_type *code, const uint8_t *message) {
+	void operator()(code_type *code, const uint8_t *message, const uint32_t *frozen_bits, int data_bits) {
 		for (int i = 0; i < data_bits; ++i)
 			mesg[i] = nrz(CODE::get_le_bit(message, i));
 		crc.reset();
@@ -41,7 +40,7 @@ public:
 			crc(message[i]);
 		for (int i = 0; i < 32; ++i)
 			mesg[i + data_bits] = nrz((crc() >> i) & 1);
-		encode(code, mesg, frozen_2048_1392, code_order);
+		encode(code, mesg, frozen_bits, code_order);
 	}
 };
 
@@ -55,27 +54,27 @@ class PolarDecoder {
 	typedef typename CODE::PolarHelper<mesg_type>::PATH metric_type;
 	static const int code_order = 11;
 	static const int code_len = 1 << code_order;
-	static const int data_bits = 1360;
-	static const int crc_bits = data_bits + 32;
+	static const int max_bits = 1360 + 32;
 	CODE::CRC<uint32_t> crc;
 	CODE::PolarEncoder<mesg_type> encode;
 	CODE::PolarListDecoder<mesg_type, code_order> decode;
-	mesg_type mesg[crc_bits], mess[code_len];
+	mesg_type mesg[max_bits], mess[code_len];
 
-	void systematic() {
-		encode(mess, mesg, frozen_2048_1392, code_order);
+	void systematic(const uint32_t *frozen_bits, int crc_bits) {
+		encode(mess, mesg, frozen_bits, code_order);
 		for (int i = 0, j = 0; i < code_len && j < crc_bits; ++i)
-			if (!((frozen_2048_1392[i / 32] >> (i % 32)) & 1))
+			if (!((frozen_bits[i / 32] >> (i % 32)) & 1))
 				mesg[j++] = mess[i];
 	}
 
 public:
 	PolarDecoder() : crc(0x8F6E37A0) {}
 
-	bool operator()(uint8_t *message, const code_type *code) {
+	bool operator()(uint8_t *message, const code_type *code, const uint32_t *frozen_bits, int data_bits) {
+		int crc_bits = data_bits + 32;
 		metric_type metric[mesg_type::SIZE];
-		decode(metric, mesg, code, frozen_2048_1392, code_order);
-		systematic();
+		decode(metric, mesg, code, frozen_bits, code_order);
+		systematic(frozen_bits, crc_bits);
 		int order[mesg_type::SIZE];
 		for (int k = 0; k < mesg_type::SIZE; ++k)
 			order[k] = k;

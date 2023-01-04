@@ -45,7 +45,7 @@ class Encoder : public EncoderInterface {
 	static const int symbol_length = (1280 * RATE) / 8000;
 	static const int guard_length = symbol_length / 8;
 	static const int extended_length = symbol_length + guard_length;
-	static const int data_bits = 1360;
+	static const int max_bits = 1360;
 	static const int cor_seq_len = 127;
 	static const int cor_seq_off = 1 - cor_seq_len;
 	static const int cor_seq_poly = 0b10001001;
@@ -63,7 +63,7 @@ class Encoder : public EncoderInterface {
 	ImprovePAPR<cmplx, symbol_length, RATE <= 16000 ? 4 : 1> improve_papr;
 	PolarEncoder<code_type> polar;
 	cmplx temp[extended_length], freq[symbol_length], prev[pay_car_cnt], guard[guard_length];
-	uint8_t mesg[data_bits / 8], call[9];
+	uint8_t mesg[max_bits / 8], call[9];
 	code_type code[code_len];
 	uint64_t meta_data;
 	int operation_mode = 0;
@@ -271,7 +271,17 @@ public:
 	}
 
 	void configure(const uint8_t *payload, const int8_t *call_sign, int carrier_frequency, int noise_symbols, bool fancy_header) final {
-		operation_mode = payload[0] ? 14 : 0;
+		int len = 0;
+		while (len <= 128 && payload[len])
+			++len;
+		if (!len)
+			operation_mode = 0;
+		else if (len <= 85)
+			operation_mode = 16;
+		else if (len <= 128)
+			operation_mode = 15;
+		else
+			operation_mode = 14;
 		carrier_offset = (carrier_frequency * symbol_length) / RATE;
 		meta_data = (base37(call_sign) << 8) | operation_mode;
 		for (int i = 0; i < 9; ++i)
@@ -284,11 +294,27 @@ public:
 		noise_count = noise_symbols;
 		for (int i = 0; i < guard_length; ++i)
 			guard[i] = 0;
-		if (!operation_mode)
-			return;
+		const uint32_t *frozen_bits;
+		int data_bits;
+		switch (operation_mode) {
+			case 14:
+				data_bits = 1360;
+				frozen_bits = frozen_2048_1392;
+				break;
+			case 15:
+				data_bits = 1024;
+				frozen_bits = frozen_2048_1056;
+				break;
+			case 16:
+				data_bits = 680;
+				frozen_bits = frozen_2048_712;
+				break;
+			default:
+				return;
+		}
 		CODE::Xorshift32 scrambler;
 		for (int i = 0; i < data_bits / 8; ++i)
 			mesg[i] = payload[i] ^ scrambler();
-		polar(code, mesg);
+		polar(code, mesg, frozen_bits, data_bits);
 	}
 };
