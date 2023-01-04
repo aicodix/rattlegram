@@ -38,7 +38,6 @@ class Encoder : public EncoderInterface {
 	typedef DSP::Complex<float> cmplx;
 	typedef DSP::Const<float> Const;
 	typedef int8_t code_type;
-	static const int operation_mode = 14;
 	static const int code_order = 11;
 	static const int mod_bits = 2;
 	static const int code_len = 1 << code_order;
@@ -67,6 +66,7 @@ class Encoder : public EncoderInterface {
 	uint8_t mesg[data_bits / 8], call[9];
 	code_type code[code_len];
 	uint64_t meta_data;
+	int operation_mode = 0;
 	int carrier_offset = 0;
 	int symbol_number = symbol_count;
 	int count_down = 0;
@@ -235,6 +235,8 @@ public:
 			case 3:
 				preamble();
 				--count_down;
+				if (!operation_mode)
+					--count_down;
 				break;
 			case 2:
 				payload_symbol();
@@ -269,6 +271,7 @@ public:
 	}
 
 	void configure(const uint8_t *payload, const int8_t *call_sign, int carrier_frequency, int noise_symbols, bool fancy_header) final {
+		operation_mode = payload[0] ? 14 : 0;
 		carrier_offset = (carrier_frequency * symbol_length) / RATE;
 		meta_data = (base37(call_sign) << 8) | operation_mode;
 		for (int i = 0; i < 9; ++i)
@@ -281,6 +284,8 @@ public:
 		noise_count = noise_symbols;
 		for (int i = 0; i < guard_length; ++i)
 			guard[i] = 0;
+		if (!operation_mode)
+			return;
 		CODE::Xorshift32 scrambler;
 		for (int i = 0; i < data_bits / 8; ++i)
 			mesg[i] = payload[i] ^ scrambler();
