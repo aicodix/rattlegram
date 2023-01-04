@@ -4,7 +4,7 @@
 	tools:context="com.aicodix.rattlegram.MainActivity">
 	<item
 		android:id="@+id/action_compose"
-		android:icon="@drawable/ic_baseline_email_24"
+		android:icon="@drawable/ic_baseline_chat_bubble_outline_24"
 		android:title="@string/compose"
 		app:iconTint="@color/tint"
 		app:showAsAction="always" />
