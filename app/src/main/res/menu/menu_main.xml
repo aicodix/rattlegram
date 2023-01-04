@@ -3,6 +3,12 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	tools:context="com.aicodix.rattlegram.MainActivity">
 	<item
+		android:id="@+id/action_ping"
+		android:icon="@drawable/ic_baseline_notifications_none_24"
+		android:title="@string/ping"
+		app:iconTint="@color/tint"
+		app:showAsAction="always" />
+	<item
 		android:id="@+id/action_compose"
 		android:icon="@drawable/ic_baseline_chat_bubble_outline_24"
 		android:title="@string/compose"

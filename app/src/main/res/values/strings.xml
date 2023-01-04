@@ -39,6 +39,7 @@
 	<string name="draft">Draft</string>
 	<string name="discard">Discard</string>
 	<string name="transmit">Transmit</string>
+	<string name="ping">Ping</string>
 	<string name="compose">Compose</string>
 	<string name="compose_message">Compose Message</string>
 	<string name="call_sign">Call Sign</string>
@@ -71,6 +72,7 @@
 	<string name="preamble_fail">Preamble failure</string>
 	<string name="preamble_nope">Mode %1$d unsupported</string>
 	<string name="preamble_ping">Got ping</string>
+	<string name="sent_ping">Sent ping</string>
 	<string name="heap_error">Not enough memory</string>
 	<string name="decoding_failed">Decoding failed</string>
 	<string name="payload_unknown">Payload unknown</string>

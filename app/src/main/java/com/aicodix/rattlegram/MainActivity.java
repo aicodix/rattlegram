@@ -686,6 +686,10 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
+		if (id == R.id.action_ping) {
+			transmitMessage("");
+			return true;
+		}
 		if (id == R.id.action_compose) {
 			composeMessage(null);
 			return true;
@@ -936,7 +940,10 @@ public class MainActivity extends AppCompatActivity {
 	private void transmitMessage(String message) {
 		stopListening();
 		byte[] mesg = Arrays.copyOf(message.getBytes(StandardCharsets.UTF_8), payload.length);
-		addMessage(callSign.trim(), getString(R.string.transmitted), new String(mesg).trim());
+		if (message.length() == 0)
+			addLine(callSign.trim(), getString(R.string.sent_ping));
+		else
+			addMessage(callSign.trim(), getString(R.string.transmitted), new String(mesg).trim());
 		configureEncoder(mesg, callTerm(), carrierFrequency, noiseSymbols, fancyHeader);
 		audioTrack.write(new short[bufferLength], 0, bufferLength);
 		audioTrack.play();
