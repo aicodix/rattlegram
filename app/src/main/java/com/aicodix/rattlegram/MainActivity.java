@@ -915,16 +915,26 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				int bytes = charSequence.toString().getBytes().length;
-				if (bytes > 170) {
+				if (bytes <= 85) {
+					int num = 85 - bytes;
+					left.setText(getResources().getQuantityString(R.plurals.strong_bytes_left, num, num));
+					left.setTextColor(ContextCompat.getColor(context, R.color.tint));
+					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+				} else if (bytes <= 128) {
+					int num = 128 - bytes;
+					left.setText(getResources().getQuantityString(R.plurals.medium_bytes_left, num, num));
+					left.setTextColor(ContextCompat.getColor(context, R.color.tint));
+					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+				} else if (bytes <= 170) {
+					int num = 170 - bytes;
+					left.setText(getResources().getQuantityString(R.plurals.normal_bytes_left, num, num));
+					left.setTextColor(ContextCompat.getColor(context, R.color.tint));
+					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+				} else {
 					int num = bytes - 170;
 					left.setText(getResources().getQuantityString(R.plurals.over_capacity, num, num));
 					left.setTextColor(Color.RED);
 					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-				} else {
-					int num = 170 - bytes;
-					left.setText(getResources().getQuantityString(R.plurals.bytes_left, num, num));
-					left.setTextColor(ContextCompat.getColor(context, R.color.tint));
-					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
 				}
 			}
 

@@ -58,9 +58,17 @@
 	<string name="title_line">%1$s - %2$s - %3$s</string>
 	<string name="title_message">%1$s - %2$s - %3$s:\n%4$s</string>
 	<string name="from_status">From %1$s - Mode %2$d - CFO %3$.2f Hz</string>
-	<plurals name="bytes_left">
-		<item quantity="one">%d byte left</item>
-		<item quantity="other">%d bytes left</item>
+	<plurals name="strong_bytes_left">
+		<item quantity="one">%d byte left for strong protection</item>
+		<item quantity="other">%d bytes left for strong protection</item>
+	</plurals>
+	<plurals name="medium_bytes_left">
+		<item quantity="one">%d byte left for medium protection</item>
+		<item quantity="other">%d bytes left for medium protection</item>
+	</plurals>
+	<plurals name="normal_bytes_left">
+		<item quantity="one">%d byte left for normal protection</item>
+		<item quantity="other">%d bytes left for normal protection</item>
 	</plurals>
 	<plurals name="over_capacity">
 		<item quantity="one">%d byte over capacity</item>
