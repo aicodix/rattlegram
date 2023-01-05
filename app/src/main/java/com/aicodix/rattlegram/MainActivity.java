@@ -253,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
 		if (messages.getCount() >= count)
 			messages.remove(messages.getItem(count - 1));
 		messages.insert(str, 0);
+		storeSettings();
 	}
 
 	private void startListening() {
