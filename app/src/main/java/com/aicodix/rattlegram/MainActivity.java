@@ -971,8 +971,10 @@ public class MainActivity extends AppCompatActivity {
 		addMessage(new String(stagedCall).trim(), getString(R.string.repeated), new String(payload).trim());
 		configureEncoder(payload, stagedCall, carrierFrequency, noiseSymbols, fancyHeader);
 		audioTrack.write(new short[bufferLength], 0, bufferLength);
-		audioTrack.play();
-		setStatus(getString(R.string.transmitting));
+		handler.postDelayed(() -> {
+			audioTrack.play();
+			setStatus(getString(R.string.transmitting));
+		}, 1000);
 	}
 
 	private void setInputType(ViewGroup np, int it) {
