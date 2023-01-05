@@ -5,7 +5,7 @@ Copyright 2022 Ahmet Inan <inan@aicodix.de>
 */
 
 #include <jni.h>
-#define assert(expr)
+#define assert(expr) do {} while (0)
 #include "encoder.hh"
 #include "decoder.hh"
 
@@ -222,7 +222,7 @@ Java_com_aicodix_rattlegram_MainActivity_feedDecoder(
 
 extern "C" JNIEXPORT jint JNICALL
 Java_com_aicodix_rattlegram_MainActivity_processDecoder(
-	JNIEnv *env,
+	JNIEnv *,
 	jobject) {
 
 	if (!decoder)
