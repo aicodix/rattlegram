@@ -29,6 +29,7 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
 	private short[] recordBuffer;
 	private short[] outputBuffer;
 	private Menu menu;
+	private Handler handler;
 	private byte[] payload;
 	private ArrayAdapter<String> messages;
 	private float[] stagedCFO;
@@ -113,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 				audioTrack.write(outputBuffer, 0, outputBuffer.length);
 			} else {
 				audioTrack.stop();
-				startListening();
+				handler.postDelayed(() -> startListening(), 1000);
 			}
 		}
 	};
@@ -436,6 +438,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(state);
 		ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
 		status = binding.status;
+		handler = new Handler(getMainLooper());
 		setContentView(binding.getRoot());
 		stagedCFO = new float[1];
 		stagedMode = new int[1];
