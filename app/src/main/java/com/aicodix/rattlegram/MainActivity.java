@@ -205,6 +205,8 @@ public class MainActivity extends AppCompatActivity {
 					addLine(new String(stagedCall).trim(), getString(R.string.preamble_ping));
 					break;
 				case STATUS_HEAP:
+					setStatus(getString(R.string.heap_error));
+					audioRecord.stop();
 					break;
 				case STATUS_SYNC:
 					stagedDecoder(stagedCFO, stagedMode, stagedCall);
