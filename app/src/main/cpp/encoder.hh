@@ -257,6 +257,8 @@ public:
 				--count_down;
 				break;
 			default:
+				for (int i = 0; i < extended_length; ++i)
+					next_sample(audio_buffer, 0, channel_select, i);
 				return false;
 		}
 		for (int i = 0; i < guard_length; ++i) {

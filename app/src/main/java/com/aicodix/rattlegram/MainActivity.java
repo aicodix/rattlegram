@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
 	private int outputChannel;
 	private int audioSource;
 	private int carrierFrequency;
-	private int bufferLength;
 	private int recordCount;
 	private short[] recordBuffer;
 	private short[] outputBuffer;
@@ -135,11 +134,10 @@ public class MainActivity extends AppCompatActivity {
 			channelCount = 2;
 			channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
 		}
-		bufferLength = 2 * Integer.highestOneBit(outputRate) * channelCount;
-		int bufferSize = sampleSize * bufferLength;
 		int symbolLength = (1280 * outputRate) / 8000;
 		int guardLength = symbolLength / 8;
 		int extendedLength = symbolLength + guardLength;
+		int bufferSize = 5 * extendedLength * sampleSize * channelCount;
 		audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, outputRate, channelConfig, audioFormat, bufferSize, AudioTrack.MODE_STREAM);
 		outputBuffer = new short[extendedLength * channelCount];
 		audioTrack.setPlaybackPositionUpdateListener(outputListener);
@@ -961,7 +959,10 @@ public class MainActivity extends AppCompatActivity {
 		else
 			addMessage(callSign.trim(), getString(R.string.transmitted), new String(mesg).trim());
 		configureEncoder(mesg, callTerm(), carrierFrequency, noiseSymbols, fancyHeader);
-		audioTrack.write(new short[bufferLength], 0, bufferLength);
+		for (int i = 0; i < 5; ++i) {
+			produceEncoder(outputBuffer, outputChannel);
+			audioTrack.write(outputBuffer, 0, outputBuffer.length);
+		}
 		audioTrack.play();
 		setStatus(getString(R.string.transmitting));
 	}
@@ -970,7 +971,10 @@ public class MainActivity extends AppCompatActivity {
 		stopListening();
 		addMessage(new String(stagedCall).trim(), getString(R.string.repeated), new String(payload).trim());
 		configureEncoder(payload, stagedCall, carrierFrequency, noiseSymbols, fancyHeader);
-		audioTrack.write(new short[bufferLength], 0, bufferLength);
+		for (int i = 0; i < 5; ++i) {
+			produceEncoder(outputBuffer, outputChannel);
+			audioTrack.write(outputBuffer, 0, outputBuffer.length);
+		}
 		handler.postDelayed(() -> {
 			audioTrack.play();
 			setStatus(getString(R.string.transmitting));
