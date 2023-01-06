@@ -220,6 +220,7 @@ public:
 	}
 
 	bool produce(int16_t *audio_buffer, int channel_select) final {
+		bool data_symbol = false;
 		switch (count_down) {
 			case 5:
 				if (noise_count) {
@@ -230,16 +231,19 @@ public:
 				--count_down;
 			case 4:
 				schmidl_cox();
+				data_symbol = true;
 				--count_down;
 				break;
 			case 3:
 				preamble();
+				data_symbol = true;
 				--count_down;
 				if (!operation_mode)
 					--count_down;
 				break;
 			case 2:
 				payload_symbol();
+				data_symbol = true;
 				if (++symbol_number == symbol_count)
 					--count_down;
 				break;
@@ -258,7 +262,8 @@ public:
 		for (int i = 0; i < guard_length; ++i) {
 			float x = i / float(guard_length - 1);
 			float ratio(0.5);
-			x = std::min(x, ratio) / ratio;
+			if (data_symbol)
+				x = std::min(x, ratio) / ratio;
 			float y = 0.5f * (1 - std::cos(DSP::Const<float>::Pi() * x));
 			cmplx sum = DSP::lerp(guard[i], temp[i + symbol_length - guard_length], y);
 			next_sample(audio_buffer, sum, channel_select, i);
