@@ -47,7 +47,7 @@ struct DecoderInterface {
 
 	virtual int process() = 0;
 
-	virtual void spectrum(uint32_t *, uint32_t *) = 0;
+	virtual void spectrum(uint32_t *, uint32_t *, int) = 0;
 
 	virtual void staged(float *, int32_t *, uint8_t *) = 0;
 
@@ -125,6 +125,9 @@ class Decoder : public DecoderInterface {
 		r = std::clamp<float>(r, 0, 1);
 		g = std::clamp<float>(g, 0, 1);
 		b = std::clamp<float>(b, 0, 1);
+		r *= a;
+		g *= a;
+		b *= a;
 		r = std::sqrt(r);
 		g = std::sqrt(g);
 		b = std::sqrt(b);
@@ -202,14 +205,15 @@ class Decoder : public DecoderInterface {
 		return analytic(samples[i] / 32768.f);
 	}
 
-	void update_spectrum(uint32_t *pixels) {
+	void update_spectrum(uint32_t *pixels, uint32_t tint) {
 		Image<uint32_t, spectrum_width, spectrum_height> img(pixels);
 		img.fill(0);
 		auto pos = [this, img](int i) {
 			return (int) std::nearbyint((1 - power[i]) * (img.height - 1));
 		};
+		tint |= 0xff000000;
 		for (int i = 1, j = pos(0), k; i < img.width; ++i, j = k)
-			img.line(i - 1, j, i, k = pos(i), -1);
+			img.line(i - 1, j, i, k = pos(i), tint);
 	}
 
 	void update_spectrogram(uint32_t *pixels) {
@@ -395,7 +399,7 @@ public:
 		return status;
 	}
 
-	void spectrum(uint32_t *spectrum_pixels, uint32_t *spectrogram_pixels) final {
+	void spectrum(uint32_t *spectrum_pixels, uint32_t *spectrogram_pixels, int spectrum_tint) final {
 		for (int j = 0; j < 2; ++j) {
 			for (int i = 0; i < stft_length; ++i)
 				temp[i] = 0;
@@ -406,6 +410,6 @@ public:
 				power[i] = std::clamp<float>((DSP::decibel(norm(freq[i])) - dB_min) / (dB_max - dB_min), 0, 1);
 			update_spectrogram(spectrogram_pixels);
 		}
-		update_spectrum(spectrum_pixels);
+		update_spectrum(spectrum_pixels, spectrum_tint);
 	}
 };

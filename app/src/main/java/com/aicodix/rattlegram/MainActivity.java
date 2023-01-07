@@ -18,10 +18,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -74,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 	private boolean fancyHeader;
 	private boolean repeaterMode;
 	private boolean showSpectrum;
+	private int spectrumTint;
 	private int noiseSymbols;
 	private int recordRate;
 	private int outputRate;
@@ -150,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private native int processDecoder();
 
-	private native void spectrumDecoder(int[] spectrumPixels, int[] spectrogramPixels);
+	private native void spectrumDecoder(int[] spectrumPixels, int[] spectrogramPixels, int spectrumTint);
 
 	private native void stagedDecoder(float[] carrierFrequencyOffset, int[] operationMode, byte[] callSign);
 
@@ -173,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
 				return;
 			int status = processDecoder();
 			if (showSpectrum) {
-				spectrumDecoder(spectrumPixels, spectrogramPixels);
+				spectrumDecoder(spectrumPixels, spectrogramPixels, spectrumTint);
 				spectrumBitmap.setPixels(spectrumPixels, 0, spectrumWidth, 0, 0, spectrumWidth, spectrumHeight);
 				spectrogramBitmap.setPixels(spectrogramPixels, 0, spectrogramWidth, 0, 0, spectrogramWidth, spectrogramHeight);
 				spectrumView.invalidate();
@@ -877,15 +876,13 @@ public class MainActivity extends AppCompatActivity {
 		View view = getLayoutInflater().inflate(R.layout.spectrum_analyzer, null);
 		spectrogramView = view.findViewById(R.id.spectrogram);
 		spectrumView = view.findViewById(R.id.spectrum);
-		ColorStateList tint = ContextCompat.getColorStateList(this, R.color.tint);
-		spectrumView.setImageTintList(tint);
-		spectrumView.setImageTintMode(PorterDuff.Mode.SRC_IN);
 		spectrumBitmap = Bitmap.createBitmap(spectrumWidth, spectrumHeight, Bitmap.Config.ARGB_8888);
 		spectrogramBitmap = Bitmap.createBitmap(spectrogramWidth, spectrogramHeight, Bitmap.Config.ARGB_8888);
 		spectrumView.setImageBitmap(spectrumBitmap);
 		spectrogramView.setImageBitmap(spectrogramBitmap);
 		spectrumPixels = new int[spectrumWidth * spectrumHeight];
 		spectrogramPixels = new int[spectrogramWidth * spectrogramHeight];
+		spectrumTint = ContextCompat.getColor(this, R.color.tint);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
 		builder.setTitle(R.string.spectrum_analyzer);
 		builder.setView(view);

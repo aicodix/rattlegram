@@ -236,7 +236,8 @@ Java_com_aicodix_rattlegram_MainActivity_spectrumDecoder(
 	JNIEnv *env,
 	jobject,
 	jintArray JNI_spectrumPixels,
-	jintArray JNI_spectrogramPixels) {
+	jintArray JNI_spectrogramPixels,
+	jint spectrumTint) {
 
 	if (!decoder)
 		return;
@@ -251,7 +252,8 @@ Java_com_aicodix_rattlegram_MainActivity_spectrumDecoder(
 
 	decoder->spectrum(
 		reinterpret_cast<uint32_t *>(spectrumPixels),
-		reinterpret_cast<uint32_t *>(spectrogramPixels));
+		reinterpret_cast<uint32_t *>(spectrogramPixels),
+		spectrumTint);
 
 	env->ReleaseIntArrayElements(JNI_spectrogramPixels, spectrogramPixels, 0);
 	spectrogramFail:
