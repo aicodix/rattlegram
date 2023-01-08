@@ -5,8 +5,6 @@
 
 cmake_minimum_required(VERSION 3.18.1)
 
-include_directories($ENV{HOME}/dsp $ENV{HOME}/code)
-
 # Declares and names the project.
 
 project("rattlegram")
