@@ -1,0 +1,10 @@
+COFDMTV is based on COFDM (coded orthogonal frequency-division multiplexing) technology:
+- 160 ms long OFDM symbols
+- 6.25 Hz per sub-carrier
+- 1/8 guard interval
+- differentially encoded PSK (phase-shift keying) modulation
+- systematic polar codes for forward error correction
+
+Currently Modes 14, 15 and 16 are supported:
+Using either SPC(2048, 1392), SPC(2048, 1056) or SPC(2048, 712) with CRC32C aided SCL decoding and differential QPSK modulation for the payload.
+Only a bandwidth of 1600 Hz is needed and the transmission of either 85, 128 or 170 bytes take about one second with the leading noise and fancy header disabled.
