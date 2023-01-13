@@ -893,17 +893,26 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void composeMessage(String temp) {
-		if (temp == null)
-			temp = draft;
 		View view = getLayoutInflater().inflate(R.layout.compose_message, null);
 		EditText edit = view.findViewById(R.id.message);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
 		builder.setTitle(R.string.compose_message);
 		builder.setView(view);
 		builder.setNeutralButton(R.string.draft, (dialogInterface, i) -> draft = edit.getText().toString());
-		builder.setNegativeButton(R.string.discard, null);
-		builder.setPositiveButton(R.string.transmit, (dialogInterface, i) -> transmitMessage(edit.getText().toString()));
-		builder.setOnCancelListener(dialogInterface -> draft = edit.getText().toString());
+		builder.setNegativeButton(R.string.discard, (dialogInterface, i) -> {
+			if (temp == null)
+				draft = "";
+		});
+		builder.setPositiveButton(R.string.transmit, (dialogInterface, i) -> {
+			if (temp == null)
+				draft = "";
+			transmitMessage(edit.getText().toString());
+		});
+		builder.setOnCancelListener(dialogInterface -> {
+			String text = edit.getText().toString();
+			if (temp == null || !temp.equals(text))
+				draft = text;
+		});
 		AlertDialog dialog = builder.show();
 		TextView left = view.findViewById(R.id.capacity);
 		Context context = this;
@@ -944,8 +953,7 @@ public class MainActivity extends AppCompatActivity {
 
 			}
 		});
-		edit.setText(temp);
-		draft = "";
+		edit.setText(temp == null ? draft : temp);
 	}
 
 	private void transmitMessage(String message) {
