@@ -9,8 +9,8 @@ android {
         applicationId "com.aicodix.rattlegram"
         minSdk 21
         targetSdk 32
-        versionCode 8
-        versionName "1.7"
+        versionCode 9
+        versionName "1.8"
 
         externalNativeBuild {
             cmake {
