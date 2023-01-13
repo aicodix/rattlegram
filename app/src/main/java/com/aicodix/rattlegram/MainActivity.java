@@ -920,7 +920,7 @@ public class MainActivity extends AppCompatActivity {
 					int num = 85 - bytes;
 					left.setText(getResources().getQuantityString(R.plurals.strong_bytes_left, num, num));
 					left.setTextColor(ContextCompat.getColor(context, R.color.tint));
-					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+					dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(bytes > 0);
 				} else if (bytes <= 128) {
 					int num = 128 - bytes;
 					left.setText(getResources().getQuantityString(R.plurals.medium_bytes_left, num, num));
