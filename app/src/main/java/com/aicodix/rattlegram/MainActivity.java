@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 	private int[] stagedMode;
 	private byte[] stagedCall;
 	private String callSign;
-	private String draft;
+	private String draftText;
 
 	private native boolean createEncoder(int sampleRate);
 
@@ -362,6 +362,7 @@ public class MainActivity extends AppCompatActivity {
 		state.putInt("carrierFrequency", carrierFrequency);
 		state.putInt("noiseSymbols", noiseSymbols);
 		state.putString("callSign", callSign);
+		state.putString("draftText", draftText);
 		state.putBoolean("fancyHeader", fancyHeader);
 		state.putBoolean("repeaterMode", repeaterMode);
 		for (int i = 0; i < messages.getCount(); ++i)
@@ -381,6 +382,7 @@ public class MainActivity extends AppCompatActivity {
 		edit.putInt("carrierFrequency", carrierFrequency);
 		edit.putInt("noiseSymbols", noiseSymbols);
 		edit.putString("callSign", callSign);
+		edit.putString("draftText", draftText);
 		edit.putBoolean("fancyHeader", fancyHeader);
 		edit.putBoolean("repeaterMode", repeaterMode);
 		for (int i = 0; i < messages.getCount(); ++i)
@@ -397,6 +399,7 @@ public class MainActivity extends AppCompatActivity {
 		final int defaultCarrierFrequency = 1450;
 		final int defaultNoiseSymbols = 6;
 		final String defaultCallSign = "ANONYMOUS";
+		final String defaultDraftText = "";
 		final boolean defaultFancyHeader = false;
 		final boolean defaultRepeaterMode = false;
 		if (state == null) {
@@ -410,6 +413,7 @@ public class MainActivity extends AppCompatActivity {
 			carrierFrequency = pref.getInt("carrierFrequency", defaultCarrierFrequency);
 			noiseSymbols = pref.getInt("noiseSymbols", defaultNoiseSymbols);
 			callSign = pref.getString("callSign", defaultCallSign);
+			draftText = pref.getString("draftText", defaultDraftText);
 			fancyHeader = pref.getBoolean("fancyHeader", defaultFancyHeader);
 			repeaterMode = pref.getBoolean("repeaterMode", defaultRepeaterMode);
 			for (int i = 0; i < 100; ++i) {
@@ -427,6 +431,7 @@ public class MainActivity extends AppCompatActivity {
 			carrierFrequency = state.getInt("carrierFrequency", defaultCarrierFrequency);
 			noiseSymbols = state.getInt("noiseSymbols", defaultNoiseSymbols);
 			callSign = state.getString("callSign", defaultCallSign);
+			draftText = state.getString("draftText", defaultDraftText);
 			fancyHeader = state.getBoolean("fancyHeader", defaultFancyHeader);
 			repeaterMode = state.getBoolean("repeaterMode", defaultRepeaterMode);
 			for (int i = 0; i < 100; ++i) {
@@ -898,20 +903,20 @@ public class MainActivity extends AppCompatActivity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
 		builder.setTitle(R.string.compose_message);
 		builder.setView(view);
-		builder.setNeutralButton(R.string.draft, (dialogInterface, i) -> draft = edit.getText().toString());
+		builder.setNeutralButton(R.string.draft, (dialogInterface, i) -> draftText = edit.getText().toString());
 		builder.setNegativeButton(R.string.discard, (dialogInterface, i) -> {
 			if (temp == null)
-				draft = "";
+				draftText = "";
 		});
 		builder.setPositiveButton(R.string.transmit, (dialogInterface, i) -> {
 			if (temp == null)
-				draft = "";
+				draftText = "";
 			transmitMessage(edit.getText().toString());
 		});
 		builder.setOnCancelListener(dialogInterface -> {
 			String text = edit.getText().toString();
 			if (temp == null || !temp.equals(text))
-				draft = text;
+				draftText = text;
 		});
 		AlertDialog dialog = builder.show();
 		TextView left = view.findViewById(R.id.capacity);
@@ -953,7 +958,7 @@ public class MainActivity extends AppCompatActivity {
 
 			}
 		});
-		edit.setText(temp == null ? draft : temp);
+		edit.setText(temp == null ? draftText : temp);
 	}
 
 	private void transmitMessage(String message) {
