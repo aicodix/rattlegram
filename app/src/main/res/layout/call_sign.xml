@@ -16,4 +16,8 @@
 		android:maxLength="9"
 		android:maxLines="1"
 		android:singleLine="true" />
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/base37_characters"/>
 </LinearLayout>
