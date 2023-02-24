@@ -2,6 +2,7 @@
 <resources>
 	<color name="black">#FF000000</color>
 	<color name="gray">#FFB4B4B4</color>
+	<color name="thin">#FF2F2F2F</color>
 	<color name="white">#FFFFFFFF</color>
 	<color name="tint">#FFFFFFFF</color>
 </resources>
