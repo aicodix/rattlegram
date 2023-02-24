@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
 	private short[] outputBuffer;
 	private Menu menu;
 	private Handler handler;
+	private Runnable statusTimer;
+	private CharSequence prevStatus;
 	private byte[] payload;
 	private ArrayAdapter<String> messages;
 	private float[] stagedCFO;
@@ -193,12 +195,12 @@ public class MainActivity extends AppCompatActivity {
 					break;
 				case STATUS_NOPE:
 					stagedDecoder(stagedCFO, stagedMode, stagedCall);
-					setStatus(fromStatus());
+					fromStatus();
 					addLine(new String(stagedCall).trim(), getString(R.string.preamble_nope, stagedMode[0]));
 					break;
 				case STATUS_PING:
 					stagedDecoder(stagedCFO, stagedMode, stagedCall);
-					setStatus(fromStatus());
+					fromStatus();
 					addLine(new String(stagedCall).trim(), getString(R.string.preamble_ping));
 					break;
 				case STATUS_HEAP:
@@ -207,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 					break;
 				case STATUS_SYNC:
 					stagedDecoder(stagedCFO, stagedMode, stagedCall);
-					setStatus(fromStatus());
+					fromStatus();
 					break;
 				case STATUS_DONE:
 					if (fetchDecoder(payload)) {
@@ -224,7 +226,23 @@ public class MainActivity extends AppCompatActivity {
 	};
 
 	private void setStatus(String str) {
+		if (statusTimer != null)
+			handler.removeCallbacks(statusTimer);
 		status.setText(str);
+	}
+
+	private void fromStatus() {
+		if (prevStatus == null) {
+			prevStatus = status.getText();
+		} else if (statusTimer != null) {
+			handler.removeCallbacks(statusTimer);
+		}
+		statusTimer = () -> {
+			status.setText(prevStatus);
+			prevStatus = null;
+		};
+		handler.postDelayed(statusTimer, 10000);
+		status.setText(getString(R.string.from_status, new String(stagedCall).trim(), stagedMode[0], stagedCFO[0]));
 	}
 
 	private byte[] callTerm() {
@@ -233,10 +251,6 @@ public class MainActivity extends AppCompatActivity {
 
 	private String currentTime() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(new Date());
-	}
-
-	private String fromStatus() {
-		return getString(R.string.from_status, new String(stagedCall).trim(), stagedMode[0], stagedCFO[0]);
 	}
 
 	private void addLine(String call, String info) {
