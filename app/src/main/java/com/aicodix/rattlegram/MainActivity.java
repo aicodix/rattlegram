@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 	private Menu menu;
 	private Handler handler;
 	private Runnable statusTimer;
-	private CharSequence prevStatus;
+	private String prevStatus;
 	private byte[] payload;
 	private ArrayAdapter<String> messages;
 	private float[] stagedCFO;
@@ -229,18 +229,13 @@ public class MainActivity extends AppCompatActivity {
 		if (statusTimer != null)
 			handler.removeCallbacks(statusTimer);
 		status.setText(str);
+		prevStatus = str;
 	}
 
 	private void fromStatus() {
-		if (prevStatus == null) {
-			prevStatus = status.getText();
-		} else if (statusTimer != null) {
+		if (statusTimer != null)
 			handler.removeCallbacks(statusTimer);
-		}
-		statusTimer = () -> {
-			status.setText(prevStatus);
-			prevStatus = null;
-		};
+		statusTimer = () -> status.setText(prevStatus);
 		handler.postDelayed(statusTimer, 10000);
 		status.setText(getString(R.string.from_status, new String(stagedCall).trim(), stagedMode[0], stagedCFO[0]));
 	}
