@@ -405,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
 		final int defaultSampleRate = 8000;
 		final int defaultChannelSelect = 0;
 		final int defaultAudioSource = MediaRecorder.AudioSource.DEFAULT;
-		final int defaultCarrierFrequency = 1450;
+		final int defaultCarrierFrequency = 1500;
 		final int defaultNoiseSymbols = 6;
 		final String defaultCallSign = "ANONYMOUS";
 		final String defaultDraftText = "";
