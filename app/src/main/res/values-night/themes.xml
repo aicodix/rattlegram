@@ -12,6 +12,7 @@
 		<!-- Status bar color. -->
 		<item name="android:statusBarColor">@color/black</item>
 		<!-- Customize your theme here. -->
+		<item name="android:navigationBarColor">@color/dark</item>
 	</style>
 	<style name="Theme.AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
 		<!-- Primary brand color. -->
