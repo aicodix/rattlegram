@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
 				case STATUS_OKAY:
 					break;
 				case STATUS_FAIL:
-					setStatus(getString(R.string.preamble_fail));
+					setStatus(getString(R.string.preamble_fail), true);
 					break;
 				case STATUS_NOPE:
 					stagedDecoder(stagedCFO, stagedMode, stagedCall);
@@ -225,19 +225,24 @@ public class MainActivity extends AppCompatActivity {
 		}
 	};
 
-	private void setStatus(String str) {
+	private void setStatus(String str, boolean tmp) {
 		if (statusTimer != null)
 			handler.removeCallbacks(statusTimer);
+		if (tmp) {
+			statusTimer = () -> status.setText(prevStatus);
+			handler.postDelayed(statusTimer, 10000);
+		} else {
+			prevStatus = str;
+		}
 		status.setText(str);
-		prevStatus = str;
+	}
+
+	private void setStatus(String str) {
+		setStatus(str, false);
 	}
 
 	private void fromStatus() {
-		if (statusTimer != null)
-			handler.removeCallbacks(statusTimer);
-		statusTimer = () -> status.setText(prevStatus);
-		handler.postDelayed(statusTimer, 10000);
-		status.setText(getString(R.string.from_status, new String(stagedCall).trim(), stagedMode[0], stagedCFO[0]));
+		setStatus(getString(R.string.from_status, new String(stagedCall).trim(), stagedMode[0], stagedCFO[0]), true);
 	}
 
 	private byte[] callTerm() {
