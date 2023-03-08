@@ -1,6 +1,6 @@
 
 PACKAGE = com.aicodix.rattlegram
-GRADLE = JAVA_HOME=$(HOME)/Android/Studio/jre/ ./gradlew
+GRADLE = JAVA_HOME=$(HOME)/Android/Studio/jbr/ ./gradlew
 ADB = adb
 
 .PHONY: all
