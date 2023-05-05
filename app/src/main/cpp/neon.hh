@@ -953,10 +953,14 @@ template <>
 inline SIMD<uint8_t, 16> vshuf(SIMD<uint8_t, 16> a, SIMD<uint8_t, 16> b)
 {
 	SIMD<uint8_t, 16> tmp;
+#ifdef __aarch64__
+	tmp.m = vqtbl1q_u8(a.m, b.m);
+#else
 	uint8x8x2_t c { vget_low_u8(a.m), vget_high_u8(a.m) };
 	uint8x8_t d = vtbl2_u8(c, vget_low_u8(b.m));
 	uint8x8_t e = vtbl2_u8(c, vget_high_u8(b.m));
 	tmp.m = vcombine_u8(d, e);
+#endif
 	return tmp;
 }
 
@@ -964,10 +968,14 @@ template <>
 inline SIMD<int8_t, 16> vshuf(SIMD<int8_t, 16> a, SIMD<uint8_t, 16> b)
 {
 	SIMD<int8_t, 16> tmp;
+#ifdef __aarch64__
+	tmp.m = vqtbl1q_s8(a.m, b.m);
+#else
 	int8x8x2_t c { vget_low_s8(a.m), vget_high_s8(a.m) };
 	int8x8_t d = vtbl2_s8(c, vget_low_s8((int8x16_t)b.m));
 	int8x8_t e = vtbl2_s8(c, vget_high_s8((int8x16_t)b.m));
 	tmp.m = vcombine_s8(d, e);
+#endif
 	return tmp;
 }
 

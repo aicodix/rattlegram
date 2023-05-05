@@ -129,7 +129,7 @@ struct PolarHelper<SIMD<int8_t, WIDTH>>
 	}
 	static TYPE qmul(TYPE a, TYPE b)
 	{
-#ifdef __ARM_NEON__
+#ifdef __ARM_NEON
 		return vmul(a, b);
 #else
 		return vsign(a, b);
@@ -137,7 +137,7 @@ struct PolarHelper<SIMD<int8_t, WIDTH>>
 	}
 	static TYPE prod(TYPE a, TYPE b)
 	{
-#ifdef __ARM_NEON__
+#ifdef __ARM_NEON
 		return vmul(vmul(vsignum(a), vsignum(b)), vmin(vqabs(a), vqabs(b)));
 #else
 		return vsign(vmin(vqabs(a), vqabs(b)), vsign(vsignum(a), b));
@@ -145,7 +145,7 @@ struct PolarHelper<SIMD<int8_t, WIDTH>>
 	}
 	static TYPE madd(TYPE a, TYPE b, TYPE c)
 	{
-#ifdef __ARM_NEON__
+#ifdef __ARM_NEON
 		return vqadd(vmul(a, vmax(b, vdup<TYPE>(-127))), c);
 #else
 		return vqadd(vsign(vmax(b, vdup<TYPE>(-127)), a), c);
