@@ -74,6 +74,10 @@
 		<item quantity="one">%d byte over capacity</item>
 		<item quantity="other">%d bytes over capacity</item>
 	</plurals>
+	<plurals name="bits_flipped">
+		<item quantity="one">%d bit flip corrected</item>
+		<item quantity="other">%d bit flips corrected</item>
+	</plurals>
 	<string name="received">Received</string>
 	<string name="transmitted">Transmitted</string>
 	<string name="repeated">Repeated</string>

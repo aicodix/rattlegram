@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private native void stagedDecoder(float[] carrierFrequencyOffset, int[] operationMode, byte[] callSign);
 
-	private native boolean fetchDecoder(byte[] payload);
+	private native int fetchDecoder(byte[] payload);
 
 	private native boolean createDecoder(int sampleRate);
 
@@ -212,13 +212,15 @@ public class MainActivity extends AppCompatActivity {
 					fromStatus();
 					break;
 				case STATUS_DONE:
-					if (fetchDecoder(payload)) {
+					int result = fetchDecoder(payload);
+					if (result < 0) {
+						addLine(new String(stagedCall).trim(), getString(R.string.decoding_failed));
+					} else {
+						setStatus(getResources().getQuantityString(R.plurals.bits_flipped, result, result), true);
 						if (repeaterMode)
 							repeatMessage();
 						else
 							addMessage(new String(stagedCall).trim(), getString(R.string.received), new String(payload).trim());
-					} else {
-						addLine(new String(stagedCall).trim(), getString(R.string.decoding_failed));
 					}
 					break;
 			}

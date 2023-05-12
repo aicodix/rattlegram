@@ -140,12 +140,12 @@ Java_com_aicodix_rattlegram_MainActivity_createDecoder(
 	return decoder != nullptr;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
+extern "C" JNIEXPORT jint JNICALL
 Java_com_aicodix_rattlegram_MainActivity_fetchDecoder(
 	JNIEnv *env,
 	jobject,
 	jbyteArray JNI_payload) {
-	jboolean status = false;
+	jint status = -1;
 	if (decoder) {
 		jbyte *payload = env->GetByteArrayElements(JNI_payload, nullptr);
 		if (payload)
