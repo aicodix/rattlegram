@@ -22,11 +22,14 @@ Copyright 2022 Ahmet Inan <inan@aicodix.de>
 #include "mls.hh"
 #include "crc.hh"
 #include "psk.hh"
+#include "wav.hh"
 
 struct EncoderInterface {
 	virtual void configure(const uint8_t *, const int8_t *, int, int, bool) = 0;
 
 	virtual bool produce(int16_t *, int) = 0;
+
+	virtual bool produce_write(int) = 0;
 
 	virtual int rate() = 0;
 
@@ -56,6 +59,7 @@ class Encoder : public EncoderInterface {
 	static const int pay_car_off = -pay_car_cnt / 2;
 	static const int fancy_off = -(8 * 9 * 3) / 2;
 	static const int noise_poly = 0b100101010001;
+	DSP::WritePCM<float> *pcm;
 	DSP::FastFourierTransform<symbol_length, cmplx, 1> bwd;
 	CODE::CRC<uint16_t> crc;
 	CODE::BoseChaudhuriHocquenghemEncoder<255, 71> bch;
@@ -207,7 +211,7 @@ class Encoder : public EncoderInterface {
 	}
 
 public:
-	Encoder() : noise_seq(noise_poly), crc(0xA8F4), bch({
+	Encoder(DSP::WritePCM<float> *pcm) : pcm(pcm), noise_seq(noise_poly), crc(0xA8F4), bch({
 		0b100011101, 0b101110111, 0b111110011, 0b101101001,
 		0b110111101, 0b111100111, 0b100101011, 0b111010111,
 		0b000010011, 0b101100101, 0b110001011, 0b101100011,
@@ -218,6 +222,7 @@ public:
 	int rate() final {
 		return RATE;
 	}
+
 
 	bool produce(int16_t *audio_buffer, int channel_select) final {
 		bool data_symbol = false;
@@ -274,6 +279,62 @@ public:
 			guard[i] = temp[i];
 		for (int i = 0; i < symbol_length; ++i)
 			next_sample(audio_buffer, temp[i], channel_select, i + guard_length);
+		return true;
+	}
+
+	bool produce_write(int channel) {
+		bool data_symbol = false;
+		switch (count_down) {
+			case 5:
+				if (noise_count) {
+					--noise_count;
+					noise_symbol();
+					break;
+				}
+				--count_down;
+			case 4:
+				schmidl_cox();
+				data_symbol = true;
+				--count_down;
+				break;
+			case 3:
+				preamble();
+				data_symbol = true;
+				--count_down;
+				if (!operation_mode)
+					--count_down;
+				break;
+			case 2:
+				payload_symbol();
+				data_symbol = true;
+				if (++symbol_number == symbol_count)
+					--count_down;
+				break;
+			case 1:
+				if (fancy_line) {
+					--fancy_line;
+					fancy_symbol();
+					break;
+				}
+				silence();
+				--count_down;
+				break;
+			default:
+				return false;
+		}
+		for (int i = 0; i < guard_length; ++i) {
+			float x = i / float(guard_length - 1);
+			float ratio(0.5);
+			if (data_symbol)
+				x = std::min(x, ratio) / ratio;
+			float y = 0.5f * (1 - std::cos(DSP::Const<float>::Pi() * x));
+			cmplx sum = DSP::lerp(guard[i], temp[i + symbol_length - guard_length], y);
+			pcm->write(reinterpret_cast<float *>(&sum), 1, 2);
+		}
+		for (int i = 0; i < guard_length; ++i)
+			guard[i] = temp[i];
+		for (int i = 0; i < symbol_length; ++i)
+			pcm->write(reinterpret_cast<float *>(&temp[i]), 1, 2);
 		return true;
 	}
 

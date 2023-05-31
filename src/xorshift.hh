@@ -6,6 +6,8 @@ Copyright 2018 Ahmet Inan <inan@aicodix.de>
 
 #pragma once
 
+#include "stdint.h"
+
 namespace CODE {
 
 class Xorshift32

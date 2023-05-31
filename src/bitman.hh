@@ -6,6 +6,8 @@ Copyright 2018 Ahmet Inan <inan@aicodix.de>
 
 #pragma once
 
+#include "stdint.h"
+
 namespace CODE {
 
 void xor_be_bit(uint8_t *buf, int pos, bool val)

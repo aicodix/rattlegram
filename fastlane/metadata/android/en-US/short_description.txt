@@ -1,1 +1,0 @@
-Transmit short text messages over COFDMTV encoded audio signals

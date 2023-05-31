@@ -1,31 +1,20 @@
 
-PACKAGE = com.aicodix.rattlegram
-GRADLE = JAVA_HOME=$(HOME)/Android/Studio/jbr/ ./gradlew
-ADB = adb
+CXXFLAGS = -std=c++17 -W -Wall -Ofast -fno-exceptions -fno-rtti
+CXX = clang++ -stdlib=libc++ -march=native
+#CXX = g++ -march=native
+
+#CXX = armv7a-hardfloat-linux-gnueabi-g++ -static -mfpu=neon -march=armv7-a
+#QEMU = qemu-arm
 
 .PHONY: all
 
-all:
-	$(GRADLE) installDebug
-	$(ADB) shell am start -n $(PACKAGE)/$(PACKAGE).MainActivity
+all: encode decode
 
-.PHONY: build
+encode: src/encode.ccp
+	$(CXX) $(CXXFLAGS) $< -o $@
 
-build:
-	$(GRADLE) assembleDebug
+.PHONY: clean
 
-.PHONY: install
-
-install:
-	$(ADB) -d install app/build/outputs/apk/debug/app-debug.apk
-
-.PHONY: remove
-
-remove:
-	$(ADB) uninstall $(PACKAGE)
-
-.PHONY: start
-
-start:
-	$(ADB) shell am start -n $(PACKAGE)/$(PACKAGE).MainActivity
+clean:
+	rm -f encode
 

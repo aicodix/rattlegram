@@ -8,6 +8,8 @@ Copyright 2018 Ahmet Inan <inan@aicodix.de>
 
 #include <initializer_list>
 #include "bitman.hh"
+#include <iostream>
+#include <cassert>
 
 namespace CODE {
 
