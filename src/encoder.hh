@@ -224,6 +224,7 @@ public:
 	}
 
 
+
 	bool produce(int16_t *audio_buffer, int channel_select) final {
 		bool data_symbol = false;
 		switch (count_down) {
@@ -329,12 +330,12 @@ public:
 				x = std::min(x, ratio) / ratio;
 			float y = 0.5f * (1 - std::cos(DSP::Const<float>::Pi() * x));
 			cmplx sum = DSP::lerp(guard[i], temp[i + symbol_length - guard_length], y);
-			pcm->write(reinterpret_cast<float *>(&sum), 1, 2);
+			pcm->write(reinterpret_cast<float *>(&sum), 1, channel);
 		}
 		for (int i = 0; i < guard_length; ++i)
 			guard[i] = temp[i];
 		for (int i = 0; i < symbol_length; ++i)
-			pcm->write(reinterpret_cast<float *>(&temp[i]), 1, 2);
+			pcm->write(reinterpret_cast<float *>(&temp[i]), 1, channel);
 		return true;
 	}
 

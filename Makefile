@@ -8,9 +8,9 @@ CXX = clang++ -stdlib=libc++ -march=native
 
 .PHONY: all
 
-all: encode decode
+all: encode
 
-encode: src/encode.ccp
+encode: ./src/encode.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 .PHONY: clean
