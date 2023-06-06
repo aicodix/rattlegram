@@ -330,14 +330,52 @@ public:
 				x = std::min(x, ratio) / ratio;
 			float y = 0.5f * (1 - std::cos(DSP::Const<float>::Pi() * x));
 			cmplx sum = DSP::lerp(guard[i], temp[i + symbol_length - guard_length], y);
-			float sum_real = sum.real();
-			pcm->write(&sum_real, 1);
+			float sum_write[2];
+			switch (channel) {
+				case 1:
+					sum_write[0] = sum.real(); 
+					sum_write[1] = 0.0;
+					pcm->write(sum_write, 1, 2);
+					break;
+				case 2:
+					sum_write[0] = 0.0; 
+					sum_write[1] = sum.real();
+					pcm->write(sum_write, 1, 2);
+					break;
+				case 3:
+					sum_write[0] = sum.real(); 
+					sum_write[1] = sum.imag();
+					pcm->write(sum_write, 1, 2);
+					break;
+				default:
+					sum_write[0] = sum.real();
+					pcm->write(sum_write, 1, 1);
+			}
 		}
 		for (int i = 0; i < guard_length; ++i)
 			guard[i] = temp[i];
 		for (int i = 0; i < symbol_length; ++i) {
-			float temp_real = temp[i].real();
-			pcm->write(&temp_real, 1);
+			float temp_write[2];
+			switch (channel) {
+				case 1:
+					temp_write[0] = temp[i].real(); 
+					temp_write[1] = 0.0;
+					pcm->write(temp_write, 1, 2);
+					break;
+				case 2:
+					temp_write[0] = 0.0; 
+					temp_write[1] = temp[i].real();
+					pcm->write(temp_write, 1, 2);
+					break;
+				case 3:
+					temp_write[0] = temp[i].real(); 
+					temp_write[1] = temp[i].imag();
+					pcm->write(temp_write, 1, 2);
+					break;
+				default:
+					temp_write[0] = temp[i].real();
+					pcm->write(temp_write, 1, 1);
+			}
 		}
 			
 		return true;
