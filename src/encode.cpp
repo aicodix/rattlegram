@@ -46,6 +46,9 @@ int main(int argc, char **argv) {
         case 16000:
             encoder = new(std::nothrow) Encoder<16000>(&output_file);
             break;
+        case 32000:
+            encoder = new(std::nothrow) Encoder<32000>(&output_file);
+            break;
         case 44100:
             encoder = new(std::nothrow) Encoder<44100>(&output_file);
             break;
@@ -54,7 +57,7 @@ int main(int argc, char **argv) {
             break;
         default:
             std::cerr << "Unsupported sample rate." ;
-            std::cerr << "Supported rates: 8000/16000/44100/48000."<< std::endl;
+            std::cerr << "Supported rates: 8000/16000/32000/44100/48000."<< std::endl;
             return 1;
     }
     encoder->configure(reinterpret_cast<const uint8_t*>(&message[0]), 
