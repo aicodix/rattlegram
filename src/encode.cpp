@@ -2,11 +2,7 @@
 #include <cstdint>
 
 static EncoderInterface *encoder;
-typedef DSP::Complex<float> cmplx;
 const int RATE = 8000;
-const int SYMBOL_LENGHT = (1280 * RATE) / 8000;
-const int GUARD_LENGTH = SYMBOL_LENGHT/8;
-const int EXTENDED_LENGTH = SYMBOL_LENGHT + GUARD_LENGTH;
 const int CHANNEL = 3;
 const int DEFAULT_NOISE_SYMBOLS = 1;
 const int CARRIER_FREQUENCY = 1500;
@@ -19,7 +15,7 @@ int main(int argc, char **argv) {
         message[i] = mesg[i];
     }
     const char call_sign[] = "OWO";
-    const char out_file[] = "test.wav";
+    const char out_file[] = "out.wav";
     int channel_count = 1;
     if (CHANNEL != 0) {
         channel_count = 2;
