@@ -31,7 +31,8 @@ int main(int argc, char **argv) {
 
     char message[192] = {0};
     for (int i = 0; i < mesg.length(); i++) {
-        message[i] = mesg[i];
+        if (i < 192)
+            message[i] = mesg[i];
     }
     int channel_count = 1;
     if (channel != 0) {
@@ -61,7 +62,8 @@ int main(int argc, char **argv) {
         carrier_freq, 
         noise_symbols, 
         false);
-    for (int i = 0; i < 9 + noise_symbols; ++i) {
+    //not sure how often to iterate. up to testing
+    for (int i = 0; i < 8 + noise_symbols; ++i) {
         encoder->produce_write(channel);
 	}
 
