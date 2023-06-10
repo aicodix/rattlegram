@@ -7,6 +7,7 @@ Copyright 2020 Ahmet Inan <inan@aicodix.de>
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 #include "polar_helper.hh"
 
 namespace CODE {

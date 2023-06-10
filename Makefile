@@ -13,7 +13,7 @@ all: encode decode
 encode: ./src/encode.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-encode: ./src/decode.cpp
+decode: ./src/decode.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 .PHONY: clean

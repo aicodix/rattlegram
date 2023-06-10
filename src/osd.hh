@@ -7,6 +7,7 @@ Copyright 2020 Ahmet Inan <inan@aicodix.de>
 #pragma once
 
 #include <initializer_list>
+#include <cassert>
 #include "bitman.hh"
 
 namespace CODE {
