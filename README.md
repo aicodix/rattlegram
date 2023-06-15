@@ -7,3 +7,10 @@ Encode usage:
 ```
 ./encode MESSAGE CALLSIGN [NOISE_SYMBOLS] [CARRIER_FREQUENCY] [RATE] [BITS] [CHANNEL]
 ```
+
+Decode usage:
+```
+./decode FILE CHANNEL
+```
+#### Dependcies
+AudioFile https://github.com/adamstark/AudioFile
