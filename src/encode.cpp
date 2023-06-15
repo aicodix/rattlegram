@@ -10,10 +10,10 @@ int main(int argc, char **argv) {
     int noise_symbols = 1;
     int carrier_freq = 1500;
     int output_bits = 16;
-    char out_file[] = "out.wav";
+    char *out_file = "out.wav";
 
-    if (argc < 3 | argc > 8) {
-        std::cerr << "usage: " << argv[0] << " MESSAGE CALLSIGN [NOISE_SYMBOLS] [CARRIER_FREQUENCY] [RATE] [BITS] [CHANNEL]" << std::endl;
+    if (argc < 3 | argc > 9) {
+        std::cerr << "usage: " << argv[0] << " MESSAGE CALLSIGN [NOISE_SYMBOLS] [CARRIER_FREQUENCY] [RATE] [BITS] [CHANNEL] [FILE]" << std::endl;
         return 1;
     }
     std::string mesg(argv[1]);
@@ -28,6 +28,8 @@ int main(int argc, char **argv) {
         output_bits = std::atoi(argv[6]);
     if (argc > 7)
         channel = std::atoi(argv[7]);
+    if (argc > 8)
+        out_file = argv[8];
 
     char message[192] = {0};
     for (int i = 0; i < mesg.length(); i++) {

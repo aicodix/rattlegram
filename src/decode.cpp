@@ -6,16 +6,36 @@
 static DecoderInterface *decoder;
 
 int main(int argc, char **argv) {
-	char input_name[] = "out.wav";
+	if (argc != 3) {
+        std::cerr << "usage: " << argv[0] << " FILE CHANNEL" << std::endl;
+        return 1;
+    }
+	const char* input_name = argv[1];
+	int channel = std::atoi(argv[2]);
 	AudioFile<int16_t> audioFile;
 	audioFile.load(input_name);
 	int rate = audioFile.getSampleRate();
 	int channel_count = audioFile.getNumChannels();
+	if (channel < 0 || channel > 4) {
+		std::cout << "Channel must be between 0 and 5." << std::endl;
+		return 1; 
+	}
+	if (!(channel_count == 1 || channel_count == 2)) {
+		std::cout << "Only mono and stereo audio is supported." << std::endl;
+		return 1;
+	}
+	if ((channel > 0 && channel < 5) && (channel_count != 2)) {
+		std::cout << "Channel 1 - 4 are only supported for stereo audio." << std::endl;
+		return 1; 
+	}
+	if (channel_count == 1) {
+	std::cout << "Mono audio. Channel set to 0." << std::endl;
+	channel = 0;
+	}
 	int file_length = audioFile.getNumSamplesPerChannel() * channel_count;
 	int symbol_length = (1280 * rate) / 8000;
 	int guard_length = symbol_length / 8;
 	int extended_length = symbol_length + guard_length;
-	int channel = 0;
 	int record_count = rate/50;
 
 	int16_t file[file_length + record_count];
@@ -52,9 +72,7 @@ int main(int argc, char **argv) {
 
 	for (int i = 0; i * record_count < file_length; i++) {
 		if (decoder->feed(&file[i*record_count*channel_count], record_count*channel_count, channel)) {
-			std::cout << i << std::endl;
 			int status = decoder->process();
-			std::cout << "Status: " << status << std::endl;	
 			float cfo = -1.0;
 			int32_t mode = -1;
 			uint8_t call_sign[192] = {0}; 
@@ -64,7 +82,6 @@ int main(int argc, char **argv) {
 
 			switch (status) {
 				case 0:
-					std::cout << "OKAY" << std::endl;
 					break;
 				case 1:
 					std::cout << "PREAMBLE FAIL" << std::endl;
@@ -72,12 +89,12 @@ int main(int argc, char **argv) {
 				case 2:
 					decoder->staged(&cfo, &mode, call_sign);
 					call = (reinterpret_cast<char*>(call_sign));
-					std::cout << "SYNC:"
-							<< "  CFO "
-							<< cfo
-							<< "  mode: "
-							<< mode
-							<< "  call sign: "
+					std::cout << "SYNC:" << std::endl 
+							<< "CFO: " 
+							<< cfo << std::endl 
+							<< "Mode: "
+							<< mode << std::endl 
+							<< "Call sign: "
 							<< call
 							<< std::endl;
 					break;
@@ -126,7 +143,7 @@ int main(int argc, char **argv) {
 	std::string payload_str;
 	decoder->fetch(payload);
 	payload_str = (reinterpret_cast<char*>(payload));
-	std::cout << "DONE:  payload: " 
+	std::cout << "Payload: " 
 			<< payload_str
 			<< std::endl;
     return 0;
