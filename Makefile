@@ -19,5 +19,5 @@ decode: ./src/decode.cpp
 .PHONY: clean
 
 clean:
-	rm -f encode
+	rm -f encode && rm -f decode
 
