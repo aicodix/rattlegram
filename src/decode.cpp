@@ -45,7 +45,6 @@ int main(int argc, char **argv) {
 	for (int i = 0; i < file_length/channel_count; i++) {
 		for (int c = 0; c < channel_count; c++) {
 			file[i * channel_count + c] = audioFile.samples[c][i];
-			std::cout << file[i * channel_count + c] << "  ";
 		}
 	}
 
