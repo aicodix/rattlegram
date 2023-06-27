@@ -42,11 +42,13 @@ class Encoder : public EncoderInterface {
 	typedef DSP::Const<float> Const;
 	typedef int8_t code_type;
 	static const int code_order = 11;
+	//static const int mod_bits = 2;
 	static const int mod_bits = 2;
 	static const int code_len = 1 << code_order;
 	static const int symbol_count = 4;
 	static const int symbol_length = (1280 * RATE) / 8000;
 	static const int guard_length = symbol_length / 8;
+	//static const int guard_length = symbol_length / 4;
 	static const int extended_length = symbol_length + guard_length;
 	static const int max_bits = 1360;
 	static const int cor_seq_len = 127;
@@ -56,6 +58,7 @@ class Encoder : public EncoderInterface {
 	static const int pre_seq_off = -pre_seq_len / 2;
 	static const int pre_seq_poly = 0b100101011;
 	static const int pay_car_cnt = 256;
+	//static const int pay_car_cnt = 512;
 	static const int pay_car_off = -pay_car_cnt / 2;
 	static const int fancy_off = -(8 * 9 * 3) / 2;
 	static const int noise_poly = 0b100101010001;
@@ -97,6 +100,10 @@ class Encoder : public EncoderInterface {
 	static int nrz(bool bit) {
 		return 1 - 2 * bit;
 	}
+
+	// static cmplx mod_map(code_type *b) {
+	// 	return PhaseShiftKeying<4, cmplx, code_type>::map(b);
+	// }
 
 	static cmplx mod_map(code_type *b) {
 		return PhaseShiftKeying<4, cmplx, code_type>::map(b);

@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
 	for (int i = 0; i < file_length/channel_count; i++) {
 		for (int c = 0; c < channel_count; c++) {
 			file[i * channel_count + c] = audioFile.samples[c][i];
+			std::cout << file[i * channel_count + c] << "  ";
 		}
 	}
 
@@ -70,8 +71,8 @@ int main(int argc, char **argv) {
             return 1;
 	}
 
-	for (int i = 0; i * record_count < file_length; i++) {
-		if (decoder->feed(&file[i*record_count*channel_count], record_count*channel_count, channel)) {
+	for (int i = 0; i * record_count * channel_count < file_length; i++) {
+		if (decoder->feed(&file[i*record_count*channel_count], record_count, channel)) {
 			int status = decoder->process();
 			float cfo = -1.0;
 			int32_t mode = -1;
