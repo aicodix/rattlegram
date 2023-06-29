@@ -5,12 +5,12 @@ Basic C++ cli version of the Rattlegram app that uses wav files as input/output 
 
 Encode usage:
 ```
-./encode MESSAGE CALLSIGN [NOISE_SYMBOLS] [CARRIER_FREQUENCY] [RATE] [BITS] [CHANNEL] [FILE]
+./encode MESSAGE CALLSIGN [NOISE_SYMBOLS] [CARRIER_FREQUENCY] [RATE] [BITS] [CHANNEL] [PSK] [FILE]
 ```
 
 Decode usage:
 ```
-./decode FILE CHANNEL
+./decode FILE CHANNEL [PSK]
 ```
-#### Dependcies
+#### Dependencies
 AudioFile https://github.com/adamstark/AudioFile
