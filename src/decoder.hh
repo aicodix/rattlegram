@@ -43,6 +43,16 @@ namespace DSP { using std::abs; using std::min; using std::cos; using std::sin; 
 #define STATUS_NOPE 5
 #define STATUS_PING 6
 
+int log2_int(int n) {
+    if (n == 0) {
+        std::cout << "Number is 0" << std::endl;
+        return 0;
+    }
+    int log = 0;
+    while (n >>= 1) ++log;
+    return log;
+}
+
 struct DecoderInterface {
 	virtual bool feed(const int16_t *, int, int) = 0;
 
@@ -59,7 +69,7 @@ struct DecoderInterface {
 	virtual ~DecoderInterface() = default;
 };
 
-template<int RATE>
+template<int RATE, int PSK>
 class Decoder : public DecoderInterface {
 	typedef DSP::Complex<float> cmplx;
 	typedef DSP::Const<float> Const;
@@ -67,13 +77,12 @@ class Decoder : public DecoderInterface {
 	static const int spectrum_width = 360, spectrum_height = 128;
 	static const int spectrogram_width = 360, spectrogram_height = 128;
 	static const int code_order = 11;
-	//static const int mod_bits = 2;
-	static const int mod_bits = 2;
+	static const int psk = PSK;
+	int mod_bits = log2_int(PSK);
+	static const int symbol_count = (PSK == 2)? 8 : 4;
 	static const int code_len = 1 << code_order;
-	static const int symbol_count = 4;
 	static const int symbol_length = (1280 * RATE) / 8000;
 	static const int guard_length = symbol_length / 8;
-	//static const int guard_length = symbol_length / 4;
 	static const int extended_length = symbol_length + guard_length;
 	static const int filter_length = (((33 * RATE) / 8000) & ~3) | 1;
 	static const int stft_length = extended_length / 2;
@@ -155,28 +164,16 @@ class Decoder : public DecoderInterface {
 		return 1 - 2 * bit;
 	}
 
-	// static cmplx mod_map(code_type *b) {
-	// 	return PhaseShiftKeying<4, cmplx, code_type>::map(b);
-	// }
-
-	// static void mod_hard(code_type *b, cmplx c) {
-	// 	PhaseShiftKeying<4, cmplx, code_type>::hard(b, c);
-	// }
-
-	// static void mod_soft(code_type *b, cmplx c, float precision) {
-	// 	PhaseShiftKeying<4, cmplx, code_type>::soft(b, c, precision);
-	// }
-
 	static cmplx mod_map(code_type *b) {
-		return PhaseShiftKeying<4, cmplx, code_type>::map(b);
+		return PhaseShiftKeying<psk, cmplx, code_type>::map(b);
 	}
 
 	static void mod_hard(code_type *b, cmplx c) {
-		PhaseShiftKeying<4, cmplx, code_type>::hard(b, c);
+		PhaseShiftKeying<psk, cmplx, code_type>::hard(b, c);
 	}
 
 	static void mod_soft(code_type *b, cmplx c, float precision) {
-		PhaseShiftKeying<4, cmplx, code_type>::soft(b, c, precision);
+		PhaseShiftKeying<psk, cmplx, code_type>::soft(b, c, precision);
 	}
 
 	static void base37(uint8_t *str, uint64_t val, int len) {

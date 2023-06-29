@@ -6,12 +6,13 @@
 static DecoderInterface *decoder;
 
 int main(int argc, char **argv) {
-	if (argc != 3) {
-        std::cerr << "usage: " << argv[0] << " FILE CHANNEL" << std::endl;
+	if (argc < 3 || argc > 4) {
+        std::cerr << "usage: " << argv[0] << " FILE CHANNEL [PSK]" << std::endl;
         return 1;
     }
 	const char* input_name = argv[1];
 	int channel = std::atoi(argv[2]);
+	int psk = std::atoi(argv[3]);
 	AudioFile<int16_t> audioFile;
 	audioFile.load(input_name);
 	int rate = audioFile.getSampleRate();
@@ -47,28 +48,98 @@ int main(int argc, char **argv) {
 			file[i * channel_count + c] = audioFile.samples[c][i];
 		}
 	}
-
-    switch (rate) {
-		case 8000:
-			decoder = new(std::nothrow) Decoder<8000>();
-			break;
-		case 16000:
-			decoder = new(std::nothrow) Decoder<16000>();
-			break;
-		case 32000:
-			decoder = new(std::nothrow) Decoder<32000>();
-			break;
-		case 44100:
-			decoder = new(std::nothrow) Decoder<44100>();
-			break;
-		case 48000:
-			decoder = new(std::nothrow) Decoder<48000>();
-			break;
-		default:
+	switch (rate) {
+        case 8000:
+            switch (psk) {
+                case 2:
+                    decoder = new(std::nothrow) Decoder<8000, 2>;
+                    break;
+                case 4:
+                    decoder = new(std::nothrow) Decoder<8000, 4>;
+                    break;
+                case 8:
+                    decoder = new(std::nothrow) Decoder<8000, 8>;
+                    break;
+                default:
+                    std::cerr << "Unsupported PSK." ;
+                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    return 1;
+            }
+            break;
+        case 16000:
+            switch (psk) {
+                case 2:
+                    decoder = new(std::nothrow) Decoder<16000, 2>;
+                    break;
+                case 4:
+                    decoder = new(std::nothrow) Decoder<16000, 4>;
+                    break;
+                case 8:
+                    decoder = new(std::nothrow) Decoder<16000, 8>;
+                    break;
+                default:
+                    std::cerr << "Unsupported PSK." ;
+                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    return 1;
+            }
+            break;
+        case 32000:
+            switch (psk) {
+                case 2:
+                    decoder = new(std::nothrow) Decoder<32000, 2>;
+                    break;
+                case 4:
+                    decoder = new(std::nothrow) Decoder<32000, 4>;
+                    break;
+                case 8:
+                    decoder = new(std::nothrow) Decoder<32000, 8>;
+                    break;
+                default:
+                    std::cerr << "Unsupported PSK." ;
+                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    return 1;
+            }
+            break;
+        case 44100:
+            switch (psk) {
+                case 2:
+                    decoder = new(std::nothrow) Decoder<44100, 2>;
+                    break;
+                case 4:
+                    decoder = new(std::nothrow) Decoder<44100, 4>;
+                    break;
+                case 8:
+                    decoder = new(std::nothrow) Decoder<44100, 8>;
+                    break;
+                default:
+                    std::cerr << "Unsupported PSK." ;
+                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    return 1;
+            }
+            break;
+        case 48000:
+            switch (psk) {
+                case 2:
+                    decoder = new(std::nothrow) Decoder<48000, 2>;
+                    break;
+                case 4:
+                    decoder = new(std::nothrow) Decoder<48000, 4>;
+                    break;
+                case 8:
+                    decoder = new(std::nothrow) Decoder<48000, 8>;
+                    break;
+                default:
+                    std::cerr << "Unsupported PSK." ;
+                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    return 1;
+            }
+            break;
+        default:
             std::cerr << "Unsupported sample rate." ;
             std::cerr << "Supported rates: 8000/16000/32000/44100/48000."<< std::endl;
             return 1;
-	}
+    }
+    
 
 	for (int i = 0; i * record_count * channel_count < file_length; i++) {
 		if (decoder->feed(&file[i*record_count*channel_count], record_count, channel)) {

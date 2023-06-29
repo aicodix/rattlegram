@@ -10,10 +10,11 @@ int main(int argc, char **argv) {
     int noise_symbols = 1;
     int carrier_freq = 1500;
     int output_bits = 16;
+    int psk = 4;
     char *out_file = "out.wav";
 
-    if (argc < 3 | argc > 9) {
-        std::cerr << "usage: " << argv[0] << " MESSAGE CALLSIGN [NOISE_SYMBOLS] [CARRIER_FREQUENCY] [RATE] [BITS] [CHANNEL] [FILE]" << std::endl;
+    if (argc < 3 || argc > 10) {
+        std::cerr << "usage: " << argv[0] << " MESSAGE CALLSIGN [NOISE_SYMBOLS] [CARRIER_FREQUENCY] [RATE] [BITS] [CHANNEL] [PSK] [FILE] " << std::endl;
         return 1;
     }
     std::string mesg(argv[1]);
@@ -29,7 +30,9 @@ int main(int argc, char **argv) {
     if (argc > 7)
         channel = std::atoi(argv[7]);
     if (argc > 8)
-        out_file = argv[8];
+        psk = std::atoi(argv[8]);   
+    if (argc > 9)
+        out_file = argv[9];
 
     char message[192] = {0};
     for (int i = 0; i < mesg.length(); i++) {
@@ -43,19 +46,89 @@ int main(int argc, char **argv) {
     DSP::WriteWAV<float> output_file(out_file, rate, output_bits, channel_count);
     switch (rate) {
         case 8000:
-            encoder = new(std::nothrow) Encoder<8000>(&output_file);
+            switch (psk) {
+                case 2:
+                    encoder = new(std::nothrow) Encoder<8000, 2>(&output_file);
+                    break;
+                case 4:
+                    encoder = new(std::nothrow) Encoder<8000, 4>(&output_file);
+                    break;
+                case 8:
+                    encoder = new(std::nothrow) Encoder<8000, 8>(&output_file);
+                    break;
+                default:
+                    std::cerr << "Unsupported PSK." ;
+                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    return 1;
+            }
             break;
         case 16000:
-            encoder = new(std::nothrow) Encoder<16000>(&output_file);
+            switch (psk) {
+                case 2:
+                    encoder = new(std::nothrow) Encoder<16000, 2>(&output_file);
+                    break;
+                case 4:
+                    encoder = new(std::nothrow) Encoder<16000, 4>(&output_file);
+                    break;
+                case 8:
+                    encoder = new(std::nothrow) Encoder<16000, 8>(&output_file);
+                    break;
+                default:
+                    std::cerr << "Unsupported PSK." ;
+                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    return 1;
+            }
             break;
         case 32000:
-            encoder = new(std::nothrow) Encoder<32000>(&output_file);
+            switch (psk) {
+                case 2:
+                    encoder = new(std::nothrow) Encoder<32000, 2>(&output_file);
+                    break;
+                case 4:
+                    encoder = new(std::nothrow) Encoder<32000, 4>(&output_file);
+                    break;
+                case 8:
+                    encoder = new(std::nothrow) Encoder<32000, 8>(&output_file);
+                    break;
+                default:
+                    std::cerr << "Unsupported PSK." ;
+                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    return 1;
+            }
             break;
         case 44100:
-            encoder = new(std::nothrow) Encoder<44100>(&output_file);
+            switch (psk) {
+                case 2:
+                    encoder = new(std::nothrow) Encoder<44100, 2>(&output_file);
+                    break;
+                case 4:
+                    encoder = new(std::nothrow) Encoder<44100, 4>(&output_file);
+                    break;
+                case 8:
+                    encoder = new(std::nothrow) Encoder<44100, 8>(&output_file);
+                    break;
+                default:
+                    std::cerr << "Unsupported PSK." ;
+                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    return 1;
+            }
             break;
         case 48000:
-            encoder = new(std::nothrow) Encoder<48000>(&output_file);
+            switch (psk) {
+                case 2:
+                    encoder = new(std::nothrow) Encoder<48000, 2>(&output_file);
+                    break;
+                case 4:
+                    encoder = new(std::nothrow) Encoder<48000, 4>(&output_file);
+                    break;
+                case 8:
+                    encoder = new(std::nothrow) Encoder<48000, 8>(&output_file);
+                    break;
+                default:
+                    std::cerr << "Unsupported PSK." ;
+                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    return 1;
+            }
             break;
         default:
             std::cerr << "Unsupported sample rate." ;
@@ -68,7 +141,7 @@ int main(int argc, char **argv) {
         noise_symbols, 
         false);
     //not sure how often to iterate. up to testing
-    for (int i = 0; i < 8 + noise_symbols; ++i) {
+    for (int i = 0; i < 10 + noise_symbols; ++i) {
         encoder->produce_write(channel);
 	}
 
