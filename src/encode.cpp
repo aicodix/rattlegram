@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     char *out_file = "out.wav";
 
     if (argc < 3 || argc > 10) {
-        std::cerr << "usage: " << argv[0] << " MESSAGE CALLSIGN [NOISE_SYMBOLS] [CARRIER_FREQUENCY] [RATE] [BITS] [CHANNEL] [PSK] [FILE] " << std::endl;
+        std::cerr << "usage: " << argv[0] << " MESSAGE CALLSIGN [NOISE_SYMBOLS] [CARRIER_FREQUENCY] [RATE] [BITS] [CHANNEL] [MAPPING] [FILE] " << std::endl;
         return 1;
     }
     std::string mesg(argv[1]);
@@ -56,9 +56,12 @@ int main(int argc, char **argv) {
                 case 8:
                     encoder = new(std::nothrow) Encoder<8000, 8>(&output_file);
                     break;
+                case 16:
+                    encoder = new(std::nothrow) Encoder<8000, 16>(&output_file);
+                    break;
                 default:
-                    std::cerr << "Unsupported PSK." ;
-                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    std::cerr << "Unsupported symbol mapping." ;
+                    std::cerr << "Supported PSK: 2/4/8. Supported QAM: 16."<< std::endl;
                     return 1;
             }
             break;
@@ -73,9 +76,12 @@ int main(int argc, char **argv) {
                 case 8:
                     encoder = new(std::nothrow) Encoder<16000, 8>(&output_file);
                     break;
+                case 16:
+                    encoder = new(std::nothrow) Encoder<16000, 16>(&output_file);
+                    break;
                 default:
-                    std::cerr << "Unsupported PSK." ;
-                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    std::cerr << "Unsupported symbol mapping." ;
+                    std::cerr << "Supported PSK: 2/4/8. Supported QAM: 16."<< std::endl;
                     return 1;
             }
             break;
@@ -90,9 +96,12 @@ int main(int argc, char **argv) {
                 case 8:
                     encoder = new(std::nothrow) Encoder<32000, 8>(&output_file);
                     break;
+                case 16:
+                    encoder = new(std::nothrow) Encoder<32000, 16>(&output_file);
+                    break;
                 default:
-                    std::cerr << "Unsupported PSK." ;
-                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    std::cerr << "Unsupported symbol mapping." ;
+                    std::cerr << "Supported PSK: 2/4/8. Supported QAM: 16."<< std::endl;
                     return 1;
             }
             break;
@@ -107,9 +116,12 @@ int main(int argc, char **argv) {
                 case 8:
                     encoder = new(std::nothrow) Encoder<44100, 8>(&output_file);
                     break;
+                case 16:
+                    encoder = new(std::nothrow) Encoder<44100, 16>(&output_file);
+                    break;
                 default:
-                    std::cerr << "Unsupported PSK." ;
-                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    std::cerr << "Unsupported symbol mapping." ;
+                    std::cerr << "Supported PSK: 2/4/8. Supported QAM: 16."<< std::endl;
                     return 1;
             }
             break;
@@ -124,9 +136,12 @@ int main(int argc, char **argv) {
                 case 8:
                     encoder = new(std::nothrow) Encoder<48000, 8>(&output_file);
                     break;
+                case 16:
+                    encoder = new(std::nothrow) Encoder<48000, 16>(&output_file);
+                    break;
                 default:
-                    std::cerr << "Unsupported PSK." ;
-                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    std::cerr << "Unsupported symbol mapping." ;
+                    std::cerr << "Supported PSK: 2/4/8. Supported QAM: 16."<< std::endl;
                     return 1;
             }
             break;

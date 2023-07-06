@@ -34,6 +34,7 @@ namespace DSP { using std::abs; using std::min; using std::cos; using std::sin; 
 #include "crc.hh"
 #include "osd.hh"
 #include "psk.hh"
+#include "qam.hh"
 
 #define STATUS_OKAY 0
 #define STATUS_FAIL 1
@@ -69,7 +70,7 @@ struct DecoderInterface {
 	virtual ~DecoderInterface() = default;
 };
 
-template<int RATE, int PSK>
+template<int RATE, int SYMBOL_MAPPING>
 class Decoder : public DecoderInterface {
 	typedef DSP::Complex<float> cmplx;
 	typedef DSP::Const<float> Const;
@@ -77,9 +78,9 @@ class Decoder : public DecoderInterface {
 	static const int spectrum_width = 360, spectrum_height = 128;
 	static const int spectrogram_width = 360, spectrogram_height = 128;
 	static const int code_order = 11;
-	static const int psk = PSK;
-	int mod_bits = log2_int(PSK);
-	static const int symbol_count = (PSK == 2)? 8 : 4;
+	static const int map = SYMBOL_MAPPING;
+	int mod_bits = log2_int(SYMBOL_MAPPING);
+	static const int symbol_count = (SYMBOL_MAPPING == 2)? 8 : 4;
 	static const int code_len = 1 << code_order;
 	static const int symbol_length = (1280 * RATE) / 8000;
 	static const int guard_length = symbol_length / 8;
@@ -165,15 +166,63 @@ class Decoder : public DecoderInterface {
 	}
 
 	static cmplx mod_map(code_type *b) {
-		return PhaseShiftKeying<psk, cmplx, code_type>::map(b);
+		switch (SYMBOL_MAPPING) {
+			case 2:
+				return PhaseShiftKeying<2, cmplx, code_type>::map(b);
+				break;
+			case 4:
+				return PhaseShiftKeying<4, cmplx, code_type>::map(b);
+				break;
+			case 8:
+				return PhaseShiftKeying<8, cmplx, code_type>::map(b);
+				break;
+			case 16:
+				return QAM<16, cmplx, code_type>::map(b);
+				break;
+			default:
+				return PhaseShiftKeying<4, cmplx, code_type>::map(b);
+				break;
+		}
 	}
 
 	static void mod_hard(code_type *b, cmplx c) {
-		PhaseShiftKeying<psk, cmplx, code_type>::hard(b, c);
+		switch (SYMBOL_MAPPING) {
+			case 2:
+				return PhaseShiftKeying<2, cmplx, code_type>::hard(b, c);
+				break;
+			case 4:
+				return PhaseShiftKeying<4, cmplx, code_type>::hard(b, c);
+				break;
+			case 8:
+				return PhaseShiftKeying<8, cmplx, code_type>::hard(b, c);
+				break;
+			case 16:
+				return QAM<16, cmplx, code_type>::hard(b, c);
+				break;
+			default:
+				return PhaseShiftKeying<4, cmplx, code_type>::hard(b, c);
+				break;
+		}
 	}
 
 	static void mod_soft(code_type *b, cmplx c, float precision) {
-		PhaseShiftKeying<psk, cmplx, code_type>::soft(b, c, precision);
+		switch (SYMBOL_MAPPING) {
+			case 2:
+				return PhaseShiftKeying<2, cmplx, code_type>::soft(b, c, precision);
+				break;
+			case 4:
+				return PhaseShiftKeying<4, cmplx, code_type>::soft(b, c, precision);
+				break;
+			case 8:
+				return PhaseShiftKeying<8, cmplx, code_type>::soft(b, c, precision);
+				break;
+			case 16:
+				return QAM<16, cmplx, code_type>::soft(b, c, precision);
+				break;
+			default:
+				return PhaseShiftKeying<4, cmplx, code_type>::soft(b, c, precision);
+				break;
+		}
 	}
 
 	static void base37(uint8_t *str, uint64_t val, int len) {

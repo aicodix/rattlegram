@@ -7,12 +7,14 @@ static DecoderInterface *decoder;
 
 int main(int argc, char **argv) {
 	if (argc < 3 || argc > 4) {
-        std::cerr << "usage: " << argv[0] << " FILE CHANNEL [PSK]" << std::endl;
+        std::cerr << "usage: " << argv[0] << " FILE CHANNEL [MAPPING]" << std::endl;
         return 1;
     }
 	const char* input_name = argv[1];
 	int channel = std::atoi(argv[2]);
-	int psk = std::atoi(argv[3]);
+	int psk = 4;
+	if (argc > 3)
+		psk = std::atoi(argv[3]);
 	AudioFile<int16_t> audioFile;
 	audioFile.load(input_name);
 	int rate = audioFile.getSampleRate();
@@ -60,9 +62,12 @@ int main(int argc, char **argv) {
                 case 8:
                     decoder = new(std::nothrow) Decoder<8000, 8>;
                     break;
+				case 16:
+                    decoder = new(std::nothrow) Decoder<8000, 16>;
+                    break;
                 default:
-                    std::cerr << "Unsupported PSK." ;
-                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    std::cerr << "Unsupported symbol mapping." ;
+                    std::cerr << "Supported PSK: 2/4/8. Supported QAM: 16."<< std::endl;
                     return 1;
             }
             break;
@@ -77,9 +82,12 @@ int main(int argc, char **argv) {
                 case 8:
                     decoder = new(std::nothrow) Decoder<16000, 8>;
                     break;
+				case 16:
+                    decoder = new(std::nothrow) Decoder<16000, 16>;
+                    break;
                 default:
-                    std::cerr << "Unsupported PSK." ;
-                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    std::cerr << "Unsupported symbol mapping." ;
+                    std::cerr << "Supported PSK: 2/4/8. Supported QAM: 16."<< std::endl;
                     return 1;
             }
             break;
@@ -94,9 +102,12 @@ int main(int argc, char **argv) {
                 case 8:
                     decoder = new(std::nothrow) Decoder<32000, 8>;
                     break;
+				case 16:
+                    decoder = new(std::nothrow) Decoder<32000, 16>;
+                    break;
                 default:
-                    std::cerr << "Unsupported PSK." ;
-                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    std::cerr << "Unsupported symbol mapping." ;
+                    std::cerr << "Supported PSK: 2/4/8. Supported QAM: 16."<< std::endl;
                     return 1;
             }
             break;
@@ -111,9 +122,12 @@ int main(int argc, char **argv) {
                 case 8:
                     decoder = new(std::nothrow) Decoder<44100, 8>;
                     break;
+				case 16:
+                    decoder = new(std::nothrow) Decoder<44100, 16>;
+                    break;
                 default:
-                    std::cerr << "Unsupported PSK." ;
-                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    std::cerr << "Unsupported symbol mapping." ;
+                    std::cerr << "Supported PSK: 2/4/8. Supported QAM: 16."<< std::endl;
                     return 1;
             }
             break;
@@ -128,9 +142,12 @@ int main(int argc, char **argv) {
                 case 8:
                     decoder = new(std::nothrow) Decoder<48000, 8>;
                     break;
+				case 16:
+                    decoder = new(std::nothrow) Decoder<44100, 16>;
+                    break;
                 default:
-                    std::cerr << "Unsupported PSK." ;
-                    std::cerr << "Supported PSK: 2/4/8."<< std::endl;
+                    std::cerr << "Unsupported symbol mapping." ;
+                    std::cerr << "Supported PSK: 2/4/8. Supported QAM: 16."<< std::endl;
                     return 1;
             }
             break;

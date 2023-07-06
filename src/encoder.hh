@@ -22,6 +22,7 @@ Copyright 2022 Ahmet Inan <inan@aicodix.de>
 #include "mls.hh"
 #include "crc.hh"
 #include "psk.hh"
+#include "qam.hh"
 #include "wav.hh"
 
 int log2_int(int n) {
@@ -46,15 +47,15 @@ struct EncoderInterface {
 	virtual ~EncoderInterface() = default;
 };
 
-template<int RATE, int PSK>
+template<int RATE, int SYMBOL_MAPPING>
 class Encoder : public EncoderInterface {
 	typedef DSP::Complex<float> cmplx;
 	typedef DSP::Const<float> Const;
 	typedef int8_t code_type;
 	static const int code_order = 11;
-	static const int psk = PSK;
-	int mod_bits = log2_int(PSK);
-	static const int symbol_count = (PSK == 2)? 8 : 4;
+	static const int map = SYMBOL_MAPPING;
+	int mod_bits = log2_int(SYMBOL_MAPPING);
+	static const int symbol_count = (SYMBOL_MAPPING == 2)? 8 : 4;
 	static const int code_len = 1 << code_order;
 	static const int symbol_length = (1280 * RATE) / 8000;
 	static const int guard_length = symbol_length / 8;
@@ -110,7 +111,23 @@ class Encoder : public EncoderInterface {
 	}
 
 	static cmplx mod_map(code_type *b) {
-		return PhaseShiftKeying<psk, cmplx, code_type>::map(b);
+		switch (SYMBOL_MAPPING) {
+			case 2:
+				return PhaseShiftKeying<2, cmplx, code_type>::map(b);
+				break;
+			case 4:
+				return PhaseShiftKeying<4, cmplx, code_type>::map(b);
+				break;
+			case 8:
+				return PhaseShiftKeying<8, cmplx, code_type>::map(b);
+				break;
+			case 16:
+				return QAM<16, cmplx, code_type>::map(b);
+				break;
+			default:
+				return PhaseShiftKeying<4, cmplx, code_type>::map(b);
+				break;
+		}
 	}
 
 	int bin(int carrier) {
