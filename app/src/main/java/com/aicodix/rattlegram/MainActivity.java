@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -714,6 +715,13 @@ public class MainActivity extends AppCompatActivity {
 			transmitMessage("");
 			return true;
 		}
+
+		if (id == R.id.action_clear_messages) {
+			clearMessages();
+			return true;
+		}
+
+
 		if (id == R.id.action_compose) {
 			composeMessage(null);
 			return true;
@@ -892,6 +900,40 @@ public class MainActivity extends AppCompatActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
+
+
+	private void clearMessages() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.Theme_AlertDialog));
+		builder.setTitle("Delete All Messages")
+				.setMessage("Are you sure you want to permanently delete all of the messages?")
+				.setPositiveButton("Delete Messages", (dialog, which) -> {
+					if (messages.getCount() > 0) {
+						messages.clear();
+						SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
+						SharedPreferences.Editor editor = pref.edit();
+						for (int i = 0; i < 100; ++i) {
+							editor.remove("m" + i);
+						}
+						editor.apply();
+					}
+
+				})
+				.setNegativeButton("Cancel", null)
+				.show();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 
 	private void spectrumAnalyzer() {
 		View view = getLayoutInflater().inflate(R.layout.spectrum_analyzer, null);

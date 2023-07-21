@@ -2,6 +2,7 @@
 	<string name="app_name">Rattlegram</string>
 	<string name="decoder_settings">Decoder Settings</string>
 	<string name="encoder_settings">Encoder Settings</string>
+	<string name="del_msg">Delete Messages</string>
 	<string name="sample_rate">Sample Rate</string>
 	<string name="rate_8000">8 kHz</string>
 	<string name="rate_16000">16 kHz</string>
