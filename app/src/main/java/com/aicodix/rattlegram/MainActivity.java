@@ -886,8 +886,7 @@ public class MainActivity extends AppCompatActivity {
 			return true;
 		}
 		if (id == R.id.action_force_quit) {
-			storeSettings();
-			System.exit(0);
+			forcedQuit();
 			return true;
 		}
 		if (id == R.id.action_privacy_policy) {
@@ -918,6 +917,19 @@ public class MainActivity extends AppCompatActivity {
 						editor.apply();
 					}
 
+				})
+				.setNegativeButton("Cancel", null)
+				.show();
+	}
+
+	private void forcedQuit() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.Theme_AlertDialog));
+		builder.setTitle("Force Quit")
+				.setMessage("Are you sure you want to force Rattlegram to quit?")
+				.setPositiveButton("Force Quit", (dialog, which) -> {
+					// Perform actions when "Force Quit" button is clicked
+					storeSettings();
+					System.exit(0);
 				})
 				.setNegativeButton("Cancel", null)
 				.show();
