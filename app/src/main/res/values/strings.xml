@@ -2,6 +2,9 @@
 	<string name="app_name">Rattlegram</string>
 	<string name="decoder_settings">Decoder Settings</string>
 	<string name="encoder_settings">Encoder Settings</string>
+	<string name="delete">Delete</string>
+	<string name="delete_messages">Delete Messages</string>
+	<string name="danger_zone">Danger Zone</string>
 	<string name="sample_rate">Sample Rate</string>
 	<string name="rate_8000">8 kHz</string>
 	<string name="rate_16000">16 kHz</string>
@@ -88,6 +91,8 @@
 	<string name="heap_error">Not enough memory</string>
 	<string name="decoding_failed">Decoding failed</string>
 	<string name="payload_unknown">Payload unknown</string>
+	<string name="force_quit_prompt">Are you sure you want to force quit the app?</string>
+	<string name="delete_messages_prompt">Are you sure you want to permanently delete all of the messages?</string>
 	<string name="privacy_policy">Privacy Policy</string>
 	<string name="privacy_policy_text">To be able to decode COFDMTV encoded text messages, Rattlegram needs access to the microphone.
 Having access to the microphone is considered to be a sensitive permission and you have the right to know what Rattlegram does with that access:

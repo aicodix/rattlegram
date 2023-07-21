@@ -189,11 +189,14 @@
 				android:title="@string/disable" />
 		</menu>
 	</item>
-	<item android:title="@string/force_quit">
+	<item android:title="@string/danger_zone">
 		<menu>
 			<item
+				android:id="@+id/action_delete_messages"
+				android:title="@string/delete_messages" />
+			<item
 				android:id="@+id/action_force_quit"
-				android:title="@string/quit" />
+				android:title="@string/force_quit" />
 		</menu>
 	</item>
 	<item

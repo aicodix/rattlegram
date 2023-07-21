@@ -714,6 +714,11 @@ public class MainActivity extends AppCompatActivity {
 			transmitMessage("");
 			return true;
 		}
+		if (id == R.id.action_delete_messages) {
+			if (messages.getCount() > 0)
+				deleteMessages();
+			return true;
+		}
 		if (id == R.id.action_compose) {
 			composeMessage(null);
 			return true;
@@ -878,8 +883,7 @@ public class MainActivity extends AppCompatActivity {
 			return true;
 		}
 		if (id == R.id.action_force_quit) {
-			storeSettings();
-			System.exit(0);
+			forcedQuit();
 			return true;
 		}
 		if (id == R.id.action_privacy_policy) {
@@ -891,6 +895,34 @@ public class MainActivity extends AppCompatActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void deleteMessages() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
+		builder.setTitle(R.string.delete_messages)
+			.setMessage(R.string.delete_messages_prompt)
+			.setPositiveButton(R.string.delete, (dialog, which) -> {
+				messages.clear();
+				SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
+				SharedPreferences.Editor editor = pref.edit();
+				for (int i = 0; i < 100; ++i)
+					editor.remove("m" + i);
+				editor.apply();
+			})
+			.setNegativeButton(R.string.cancel, null)
+			.show();
+	}
+
+	private void forcedQuit() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
+		builder.setTitle(R.string.force_quit)
+			.setMessage(R.string.force_quit_prompt)
+			.setPositiveButton(R.string.quit, (dialog, which) -> {
+				storeSettings();
+				System.exit(0);
+			})
+			.setNegativeButton(R.string.cancel, null)
+			.show();
 	}
 
 	private void spectrumAnalyzer() {
