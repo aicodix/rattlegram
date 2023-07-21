@@ -31,7 +31,6 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -716,8 +715,8 @@ public class MainActivity extends AppCompatActivity {
 			return true;
 		}
 
-		if (id == R.id.action_clear_messages) {
-			clearMessages();
+		if (id == R.id.action_delete_messages) {
+			deleteMessages();
 			return true;
 		}
 
@@ -902,11 +901,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-	private void clearMessages() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.Theme_AlertDialog));
+	private void deleteMessages() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
 		builder.setTitle("Delete All Messages")
-				.setMessage("Are you sure you want to permanently delete all of the messages?")
-				.setPositiveButton("Delete Messages", (dialog, which) -> {
+				.setMessage(getString(R.string.delete_messages_prompt))
+				.setPositiveButton(getString(R.string.delete_messages), (dialog, which) -> {
 					if (messages.getCount() > 0) {
 						messages.clear();
 						SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
@@ -923,10 +922,10 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void forcedQuit() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.Theme_AlertDialog));
+		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
 		builder.setTitle("Force Quit")
-				.setMessage("Are you sure you want to force Rattlegram to quit?")
-				.setPositiveButton("Force Quit", (dialog, which) -> {
+				.setMessage(getString(R.string.force_quit_prompt))
+				.setPositiveButton(getString(R.string.force_quit), (dialog, which) -> {
 					// Perform actions when "Force Quit" button is clicked
 					storeSettings();
 					System.exit(0);

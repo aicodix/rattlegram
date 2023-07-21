@@ -193,8 +193,8 @@
 		<menu>
 
 			<item
-				android:id="@+id/action_clear_messages"
-				android:title="@string/del_msg" />
+				android:id="@+id/action_delete_messages"
+				android:title="@string/delete_messages" />
 			<item
 				android:id="@+id/action_force_quit"
 				android:title="@string/force_quit" />
