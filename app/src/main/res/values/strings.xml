@@ -2,6 +2,7 @@
 	<string name="app_name">Rattlegram</string>
 	<string name="decoder_settings">Decoder Settings</string>
 	<string name="encoder_settings">Encoder Settings</string>
+	<string name="delete">Delete</string>
 	<string name="delete_messages">Delete Messages</string>
 	<string name="danger_zone">Danger Zone</string>
 	<string name="sample_rate">Sample Rate</string>

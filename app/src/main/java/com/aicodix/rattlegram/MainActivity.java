@@ -898,9 +898,9 @@ public class MainActivity extends AppCompatActivity {
 
 	private void deleteMessages() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
-		builder.setTitle("Delete All Messages")
-			.setMessage(getString(R.string.delete_messages_prompt))
-			.setPositiveButton(getString(R.string.delete_messages), (dialog, which) -> {
+		builder.setTitle(R.string.delete_messages)
+			.setMessage(R.string.delete_messages_prompt)
+			.setPositiveButton(R.string.delete, (dialog, which) -> {
 				if (messages.getCount() > 0) {
 					messages.clear();
 					SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
@@ -912,19 +912,19 @@ public class MainActivity extends AppCompatActivity {
 				}
 
 			})
-			.setNegativeButton("Cancel", null)
+			.setNegativeButton(R.string.cancel, null)
 			.show();
 	}
 
 	private void forcedQuit() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
-		builder.setTitle("Force Quit")
-			.setMessage(getString(R.string.force_quit_prompt))
-			.setPositiveButton(getString(R.string.force_quit), (dialog, which) -> {
+		builder.setTitle(R.string.force_quit)
+			.setMessage(R.string.force_quit_prompt)
+			.setPositiveButton(R.string.quit, (dialog, which) -> {
 				storeSettings();
 				System.exit(0);
 			})
-			.setNegativeButton("Cancel", null)
+			.setNegativeButton(R.string.cancel, null)
 			.show();
 	}
 
