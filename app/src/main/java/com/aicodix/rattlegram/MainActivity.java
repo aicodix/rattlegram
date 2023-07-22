@@ -715,7 +715,8 @@ public class MainActivity extends AppCompatActivity {
 			return true;
 		}
 		if (id == R.id.action_delete_messages) {
-			deleteMessages();
+			if (messages.getCount() > 0)
+				deleteMessages();
 			return true;
 		}
 		if (id == R.id.action_compose) {
@@ -901,16 +902,12 @@ public class MainActivity extends AppCompatActivity {
 		builder.setTitle(R.string.delete_messages)
 			.setMessage(R.string.delete_messages_prompt)
 			.setPositiveButton(R.string.delete, (dialog, which) -> {
-				if (messages.getCount() > 0) {
-					messages.clear();
-					SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
-					SharedPreferences.Editor editor = pref.edit();
-					for (int i = 0; i < 100; ++i) {
-						editor.remove("m" + i);
-					}
-					editor.apply();
-				}
-
+				messages.clear();
+				SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
+				SharedPreferences.Editor editor = pref.edit();
+				for (int i = 0; i < 100; ++i)
+					editor.remove("m" + i);
+				editor.apply();
 			})
 			.setNegativeButton(R.string.cancel, null)
 			.show();
