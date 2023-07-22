@@ -191,21 +191,17 @@
 	</item>
 	<item android:title="@string/danger_zone">
 		<menu>
-
 			<item
 				android:id="@+id/action_delete_messages"
 				android:title="@string/delete_messages" />
 			<item
 				android:id="@+id/action_force_quit"
 				android:title="@string/force_quit" />
-
-
 		</menu>
 	</item>
 	<item
 		android:id="@+id/action_edit_call_sign"
 		android:title="@string/call_sign" />
-
 	<item
 		android:id="@+id/action_privacy_policy"
 		android:title="@string/privacy_policy" />

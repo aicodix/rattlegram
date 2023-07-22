@@ -714,13 +714,10 @@ public class MainActivity extends AppCompatActivity {
 			transmitMessage("");
 			return true;
 		}
-
 		if (id == R.id.action_delete_messages) {
 			deleteMessages();
 			return true;
 		}
-
-
 		if (id == R.id.action_compose) {
 			composeMessage(null);
 			return true;
@@ -899,52 +896,37 @@ public class MainActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-
-
 	private void deleteMessages() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
 		builder.setTitle("Delete All Messages")
-				.setMessage(getString(R.string.delete_messages_prompt))
-				.setPositiveButton(getString(R.string.delete_messages), (dialog, which) -> {
-					if (messages.getCount() > 0) {
-						messages.clear();
-						SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
-						SharedPreferences.Editor editor = pref.edit();
-						for (int i = 0; i < 100; ++i) {
-							editor.remove("m" + i);
-						}
-						editor.apply();
+			.setMessage(getString(R.string.delete_messages_prompt))
+			.setPositiveButton(getString(R.string.delete_messages), (dialog, which) -> {
+				if (messages.getCount() > 0) {
+					messages.clear();
+					SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
+					SharedPreferences.Editor editor = pref.edit();
+					for (int i = 0; i < 100; ++i) {
+						editor.remove("m" + i);
 					}
+					editor.apply();
+				}
 
-				})
-				.setNegativeButton("Cancel", null)
-				.show();
+			})
+			.setNegativeButton("Cancel", null)
+			.show();
 	}
 
 	private void forcedQuit() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
 		builder.setTitle("Force Quit")
-				.setMessage(getString(R.string.force_quit_prompt))
-				.setPositiveButton(getString(R.string.force_quit), (dialog, which) -> {
-					// Perform actions when "Force Quit" button is clicked
-					storeSettings();
-					System.exit(0);
-				})
-				.setNegativeButton("Cancel", null)
-				.show();
+			.setMessage(getString(R.string.force_quit_prompt))
+			.setPositiveButton(getString(R.string.force_quit), (dialog, which) -> {
+				storeSettings();
+				System.exit(0);
+			})
+			.setNegativeButton("Cancel", null)
+			.show();
 	}
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private void spectrumAnalyzer() {
 		View view = getLayoutInflater().inflate(R.layout.spectrum_analyzer, null);
