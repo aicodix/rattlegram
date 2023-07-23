@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 	private boolean fancyHeader;
 	private boolean repeaterMode;
 	private boolean showSpectrum;
+	private boolean ultrasonicEnabled;
 	private int spectrumTint;
 	private int noiseSymbols;
 	private int recordRate;
@@ -456,6 +457,7 @@ public class MainActivity extends AppCompatActivity {
 					messages.add(mesg);
 			}
 		}
+		ultrasonicEnabled = Math.abs(carrierFrequency) > 3000;
 		super.onCreate(state);
 		ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
 		status = binding.status;
@@ -719,6 +721,10 @@ public class MainActivity extends AppCompatActivity {
 				deleteMessages();
 			return true;
 		}
+		if (id == R.id.action_enable_ultrasonic) {
+			enableUltrasonic();
+			return true;
+		}
 		if (id == R.id.action_compose) {
 			composeMessage(null);
 			return true;
@@ -925,6 +931,15 @@ public class MainActivity extends AppCompatActivity {
 			.show();
 	}
 
+	private void enableUltrasonic() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AlertDialog);
+		builder.setTitle(R.string.enable_ultrasonic)
+			.setMessage(R.string.enable_ultrasonic_prompt)
+			.setPositiveButton(R.string.enable, (dialogInterface, i) -> ultrasonicEnabled = true)
+			.setNegativeButton(R.string.disable, (dialogInterface, i) -> ultrasonicEnabled = false)
+			.show();
+	}
+
 	private void spectrumAnalyzer() {
 		View view = getLayoutInflater().inflate(R.layout.spectrum_analyzer, null);
 		spectrogramView = view.findViewById(R.id.spectrogram);
@@ -1065,8 +1080,8 @@ public class MainActivity extends AppCompatActivity {
 		View view = getLayoutInflater().inflate(R.layout.carrier_frequency, null);
 		NumberPicker picker = view.findViewById(R.id.carrier);
 		int bandWidth = 1600;
-		int maxCarrierFrequency = (outputRate - bandWidth) / 2;
-		int minCarrierFrequency = outputChannel == 4 ? -maxCarrierFrequency : bandWidth / 2;
+		int maxCarrierFrequency = ultrasonicEnabled ? (outputRate - bandWidth) / 2 : 3000;
+		int minCarrierFrequency = outputChannel == 4 ? -maxCarrierFrequency : 1000;
 		if (carrierFrequency < minCarrierFrequency)
 			carrierFrequency = minCarrierFrequency;
 		if (carrierFrequency > maxCarrierFrequency)

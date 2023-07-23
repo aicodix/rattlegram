@@ -35,6 +35,7 @@
 	<string name="enable">Enable</string>
 	<string name="disable">Disable</string>
 	<string name="force_quit">Force Quit</string>
+	<string name="enable_ultrasonic">Enable Ultrasonic</string>
 	<string name="quit">Quit</string>
 	<string name="close">Close</string>
 	<string name="okay">Okay</string>
@@ -93,6 +94,9 @@
 	<string name="payload_unknown">Payload unknown</string>
 	<string name="force_quit_prompt">Are you sure you want to force quit the app?</string>
 	<string name="delete_messages_prompt">Are you sure you want to permanently delete all of the messages?</string>
+	<string name="enable_ultrasonic_prompt">Are you sure you want to enable transmission at ultrasonic frequencies?
+\n\nWARNING:\nThe higher sampling rates (44.1 and 48 kHz) enable carrier frequencies above 16 kHz for ultrasonic transmissions. Prolonged exposure to high pitched sounds can damage your hearing, even if you can\'t hear them.
+	</string>
 	<string name="privacy_policy">Privacy Policy</string>
 	<string name="privacy_policy_text">To be able to decode COFDMTV encoded text messages, Rattlegram needs access to the microphone.
 Having access to the microphone is considered to be a sensitive permission and you have the right to know what Rattlegram does with that access:
@@ -101,13 +105,12 @@ Rattlegram uses a very small temporary buffer in volatile memory and constantly 
 The resulting text message from the COFDMTV decoder is the only data that gets stored in persistent storage on your device.</string>
 	<string name="about">About Rattlegram</string>
 	<string name="about_text">Rattlegram %1$s\nCopyright 2022 aicodix GmbH
-\n\nPlease read WARNING and DISCLAIMER at the bottom of this page.
+\n\nPlease read DISCLAIMER at the bottom of this page.
 \n\nRattlegram transmits short text messages as COFDMTV encoded audio and is based on open-source software:
 \n\nOFDM modem implementation and specification:\nhttps://github.com/aicodix/modem\nBSD Zero Clause License
 \n\nPolar list and ordered statistics decoding:\nhttps://github.com/aicodix/code\nBSD Zero Clause License
 \n\nDigital signal processing:\nhttps://github.com/aicodix/dsp\nBSD Zero Clause License
 \n\nFancy header font:\nhttp://terminus-font.sourceforge.net\nSIL Open Font License
-\n\nWARNING:\nThe higher sampling rates (44.1 and 48 kHz) enable carrier frequencies above 16 kHz for ultrasonic transmissions. Prolonged exposure to high pitched sounds can damage your hearing, even if you can\'t hear them.
 \n\nDISCLAIMER:\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</string>
 	<string name="base37_characters">(space, 0–9, A-Z)</string>
 </resources>
