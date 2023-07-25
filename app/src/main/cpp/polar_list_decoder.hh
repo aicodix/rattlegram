@@ -274,7 +274,7 @@ struct PolarListTree<TYPE, 1>
 template <typename TYPE, int MAX_M>
 class PolarListDecoder
 {
-	static_assert(MAX_M >= 5 && MAX_M <= 29);
+	static_assert(MAX_M >= 5 && MAX_M <= 16);
 	typedef PolarHelper<TYPE> PH;
 	typedef typename TYPE::value_type VALUE;
 	typedef typename PH::PATH PATH;
@@ -308,19 +308,6 @@ public:
 		case 14: PolarListTree<TYPE, 14>::decode(metric, message, maps, &count, hard, soft, frozen); break;
 		case 15: PolarListTree<TYPE, 15>::decode(metric, message, maps, &count, hard, soft, frozen); break;
 		case 16: PolarListTree<TYPE, 16>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 17: PolarListTree<TYPE, 17>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 18: PolarListTree<TYPE, 18>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 19: PolarListTree<TYPE, 19>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 20: PolarListTree<TYPE, 20>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 21: PolarListTree<TYPE, 21>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 22: PolarListTree<TYPE, 22>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 23: PolarListTree<TYPE, 23>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 24: PolarListTree<TYPE, 24>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 25: PolarListTree<TYPE, 25>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 26: PolarListTree<TYPE, 26>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 27: PolarListTree<TYPE, 27>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 28: PolarListTree<TYPE, 28>::decode(metric, message, maps, &count, hard, soft, frozen); break;
-		case 29: PolarListTree<TYPE, 29>::decode(metric, message, maps, &count, hard, soft, frozen); break;
 		default: assert(false);
 		}
 
