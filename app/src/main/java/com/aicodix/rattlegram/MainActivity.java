@@ -469,14 +469,20 @@ public class MainActivity extends AppCompatActivity {
 		payload = new byte[170];
 		binding.messages.setAdapter(messages);
 		binding.messages.setOnItemClickListener((adapterView, view, i, l) -> {
-			String[] mesg = messages.getItem(i).split("\n", 2);
-			if (mesg.length == 2)
-				composeMessage(mesg[1]);
+			String item = messages.getItem(i);
+			if (item != null) {
+				String[] mesg = item.split("\n", 2);
+				if (mesg.length == 2)
+					composeMessage(mesg[1]);
+			}
 		});
 		binding.messages.setOnItemLongClickListener((adapterView, view, i, l) -> {
-			String[] mesg = messages.getItem(i).split("\n", 2);
-			if (mesg.length == 2)
-				transmitMessage(mesg[1]);
+			String item = messages.getItem(i);
+			if (item != null) {
+				String[] mesg = item.split("\n", 2);
+				if (mesg.length == 2)
+					transmitMessage(mesg[1]);
+			}
 			return true;
 		});
 		initAudioTrack();
