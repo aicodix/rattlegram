@@ -1082,10 +1082,8 @@ public class MainActivity extends AppCompatActivity {
 		int bandWidth = 1600;
 		int maxCarrierFrequency = ultrasonicEnabled ? (outputRate - bandWidth) / 2 : 3000;
 		int minCarrierFrequency = outputChannel == 4 ? -maxCarrierFrequency : 1000;
-		if (carrierFrequency < minCarrierFrequency)
-			carrierFrequency = minCarrierFrequency;
-		if (carrierFrequency > maxCarrierFrequency)
-			carrierFrequency = maxCarrierFrequency;
+		if (carrierFrequency < minCarrierFrequency || carrierFrequency > maxCarrierFrequency)
+			carrierFrequency = 1500;
 		picker.setMinValue(0);
 		picker.setDisplayedValues(null);
 		picker.setMaxValue((maxCarrierFrequency - minCarrierFrequency) / 50);
