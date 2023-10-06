@@ -1,4 +1,5 @@
-COFDMTV is based on COFDM (coded orthogonal frequency-division multiplexing) technology:
+*Rattlegram* lets you transmit short text messages over COFDMTV encoded audio signals. COFDMTV is based on COFDM (coded orthogonal frequency-division multiplexing) technology:
+
 - 160 ms long OFDM symbols
 - 6.25 Hz per sub-carrier
 - 1/8 guard interval
