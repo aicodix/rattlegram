@@ -30,10 +30,16 @@
 	<string name="two_seconds">Two seconds</string>
 	<string name="four_seconds">Four seconds</string>
 	<string name="eight_seconds">Eight seconds</string>
+	<string name="quarter_minute">Quarter of a min.</string>
+	<string name="half_minute">Half a minute</string>
+	<string name="one_minute">One minute</string>
+	<string name="two_minutes">Two minutes</string>
 	<string name="fancy_header">Fancy Header</string>
 	<string name="repeater_mode">Parrot Mode</string>
 	<string name="delay">Delay</string>
 	<string name="no_delay">No Delay</string>
+	<string name="debounce">Debounce</string>
+	<string name="allow_bouncing">Allow bouncing</string>
 	<string name="night_mode">Night Mode</string>
 	<string name="enable">Enable</string>
 	<string name="disable">Disable</string>
@@ -59,6 +65,7 @@
 	<string name="audio_recording_error">Recording audio failed. Check if access is blocked. Restart device if necessary to gain back access.</string>
 	<string name="listening">Listening</string>
 	<string name="transmitting">Transmitting</string>
+	<string name="ignoring">Ignoring</string>
 	<string name="spectrum_analyzer">Spectrum Analyzer</string>
 	<string name="spectrum_description">Spectrum of audio signal</string>
 	<string name="spectrogram_description">Spectrogram of audio signal</string>

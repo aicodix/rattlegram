@@ -198,6 +198,27 @@
 					</group>
 				</menu>
 			</item>
+			<item android:title="@string/debounce">
+				<menu>
+					<group android:checkableBehavior="single">
+						<item
+							android:id="@+id/action_set_repeater_allow_bouncing"
+							android:title="@string/allow_bouncing" />
+						<item
+							android:id="@+id/action_set_repeater_debounce_quarter_minute"
+							android:title="@string/quarter_minute" />
+						<item
+							android:id="@+id/action_set_repeater_debounce_half_minute"
+							android:title="@string/half_minute" />
+						<item
+							android:id="@+id/action_set_repeater_debounce_one_minute"
+							android:title="@string/one_minute" />
+						<item
+							android:id="@+id/action_set_repeater_debounce_two_minutes"
+							android:title="@string/two_minutes" />
+					</group>
+				</menu>
+			</item>
 		</menu>
 	</item>
 	<item android:title="@string/night_mode">

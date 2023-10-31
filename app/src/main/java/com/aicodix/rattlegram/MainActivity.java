@@ -28,6 +28,7 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -48,6 +49,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -57,6 +59,19 @@ public class MainActivity extends AppCompatActivity {
 	static {
 		System.loadLibrary("rattlegram");
 	}
+
+	private static class Message {
+		public long time;
+		public byte[] call;
+		public byte[] data;
+
+		public Message(byte[] call, byte[] data) {
+			this.time = SystemClock.elapsedRealtime() / 1000;
+			this.call = Arrays.copyOf(call, 10);
+			this.data = Arrays.copyOf(data, 170);
+		}
+	}
+	private ArrayList<Message> repeatedMessages;
 
 	private final int permissionID = 1;
 	private final int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
@@ -76,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
 	private int spectrumTint;
 	private int noiseSymbols;
 	private int repeaterDelay;
+	private int repeaterDebounce;
 	private int recordRate;
 	private int outputRate;
 	private int recordChannel;
@@ -380,6 +396,7 @@ public class MainActivity extends AppCompatActivity {
 		state.putInt("carrierFrequency", carrierFrequency);
 		state.putInt("noiseSymbols", noiseSymbols);
 		state.putInt("repeaterDelay", repeaterDelay);
+		state.putInt("repeaterDebounce", repeaterDebounce);
 		state.putString("callSign", callSign);
 		state.putString("draftText", draftText);
 		state.putBoolean("fancyHeader", fancyHeader);
@@ -401,6 +418,7 @@ public class MainActivity extends AppCompatActivity {
 		edit.putInt("carrierFrequency", carrierFrequency);
 		edit.putInt("noiseSymbols", noiseSymbols);
 		edit.putInt("repeaterDelay", repeaterDelay);
+		edit.putInt("repeaterDebounce", repeaterDebounce);
 		edit.putString("callSign", callSign);
 		edit.putString("draftText", draftText);
 		edit.putBoolean("fancyHeader", fancyHeader);
@@ -419,6 +437,7 @@ public class MainActivity extends AppCompatActivity {
 		final int defaultCarrierFrequency = 1500;
 		final int defaultNoiseSymbols = 6;
 		final int defaultRepeaterDelay = 1;
+		final int defaultRepeaterDebounce = 60;
 		final String defaultCallSign = "ANONYMOUS";
 		final String defaultDraftText = "";
 		final boolean defaultFancyHeader = false;
@@ -434,6 +453,7 @@ public class MainActivity extends AppCompatActivity {
 			carrierFrequency = pref.getInt("carrierFrequency", defaultCarrierFrequency);
 			noiseSymbols = pref.getInt("noiseSymbols", defaultNoiseSymbols);
 			repeaterDelay = pref.getInt("repeaterDelay", defaultRepeaterDelay);
+			repeaterDebounce = pref.getInt("repeaterDebounce", defaultRepeaterDebounce);
 			callSign = pref.getString("callSign", defaultCallSign);
 			draftText = pref.getString("draftText", defaultDraftText);
 			fancyHeader = pref.getBoolean("fancyHeader", defaultFancyHeader);
@@ -453,6 +473,7 @@ public class MainActivity extends AppCompatActivity {
 			carrierFrequency = state.getInt("carrierFrequency", defaultCarrierFrequency);
 			noiseSymbols = state.getInt("noiseSymbols", defaultNoiseSymbols);
 			repeaterDelay = state.getInt("repeaterDelay", defaultRepeaterDelay);
+			repeaterDebounce = state.getInt("repeaterDebounce", defaultRepeaterDebounce);
 			callSign = state.getString("callSign", defaultCallSign);
 			draftText = state.getString("draftText", defaultDraftText);
 			fancyHeader = state.getBoolean("fancyHeader", defaultFancyHeader);
@@ -473,6 +494,7 @@ public class MainActivity extends AppCompatActivity {
 		stagedMode = new int[1];
 		stagedCall = new byte[10];
 		payload = new byte[170];
+		repeatedMessages = new ArrayList<>();
 		binding.messages.setAdapter(messages);
 		binding.messages.setOnItemClickListener((adapterView, view, i, l) -> {
 			String item = messages.getItem(i);
@@ -583,6 +605,34 @@ public class MainActivity extends AppCompatActivity {
 				break;
 			case 8:
 				menu.findItem(R.id.action_set_repeater_delay_eight_seconds).setChecked(true);
+				break;
+		}
+	}
+
+
+	private void setRepeaterDebounce(int newRepeaterDebounce) {
+		if (repeaterDebounce == newRepeaterDebounce)
+			return;
+		repeaterDebounce = newRepeaterDebounce;
+		updateRepeaterDebounceMenu();
+	}
+
+	private void updateRepeaterDebounceMenu() {
+		switch (repeaterDebounce) {
+			case 0:
+				menu.findItem(R.id.action_set_repeater_allow_bouncing).setChecked(true);
+				break;
+			case 15:
+				menu.findItem(R.id.action_set_repeater_debounce_quarter_minute).setChecked(true);
+				break;
+			case 30:
+				menu.findItem(R.id.action_set_repeater_debounce_half_minute).setChecked(true);
+				break;
+			case 60:
+				menu.findItem(R.id.action_set_repeater_debounce_one_minute).setChecked(true);
+				break;
+			case 120:
+				menu.findItem(R.id.action_set_repeater_debounce_two_minutes).setChecked(true);
 				break;
 		}
 	}
@@ -744,6 +794,7 @@ public class MainActivity extends AppCompatActivity {
 		updateAudioSourceMenu();
 		updateNoiseSymbolsMenu();
 		updateRepeaterDelayMenu();
+		updateRepeaterDebounceMenu();
 		updateFancyHeaderMenu();
 		updateRepeaterModeMenu();
 		return true;
@@ -924,6 +975,26 @@ public class MainActivity extends AppCompatActivity {
 			setRepeaterDelay(8);
 			return true;
 		}
+		if (id == R.id.action_set_repeater_allow_bouncing) {
+			setRepeaterDebounce(0);
+			return true;
+		}
+		if (id == R.id.action_set_repeater_debounce_quarter_minute) {
+			setRepeaterDebounce(15);
+			return true;
+		}
+		if (id == R.id.action_set_repeater_debounce_half_minute) {
+			setRepeaterDebounce(30);
+			return true;
+		}
+		if (id == R.id.action_set_repeater_debounce_one_minute) {
+			setRepeaterDebounce(60);
+			return true;
+		}
+		if (id == R.id.action_set_repeater_debounce_two_minutes) {
+			setRepeaterDebounce(120);
+			return true;
+		}
 		if (id == R.id.action_enable_fancy_header) {
 			setFancyHeader(true);
 			return true;
@@ -1101,6 +1172,21 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void repeatMessage() {
+		Message message = new Message(stagedCall, payload);
+		Iterator<Message> iterator = repeatedMessages.iterator();
+		while (iterator.hasNext()) {
+			Message repeated = iterator.next();
+			if (message.time - repeated.time < repeaterDebounce) {
+				if (Arrays.equals(repeated.call, message.call) && Arrays.equals(repeated.data, message.data)) {
+					setStatus(getString(R.string.ignoring), true);
+					return;
+				}
+			} else {
+				iterator.remove();
+			}
+		}
+		if (repeaterDebounce > 0)
+			repeatedMessages.add(message);
 		stopListening();
 		addMessage(new String(stagedCall).trim(), getString(R.string.repeated), new String(payload).trim());
 		configureEncoder(payload, stagedCall, carrierFrequency, noiseSymbols, fancyHeader);
