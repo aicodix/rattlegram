@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 	private boolean ultrasonicEnabled;
 	private int spectrumTint;
 	private int noiseSymbols;
+	private int repeaterDelay;
 	private int recordRate;
 	private int outputRate;
 	private int recordChannel;
@@ -378,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
 		state.putInt("audioSource", audioSource);
 		state.putInt("carrierFrequency", carrierFrequency);
 		state.putInt("noiseSymbols", noiseSymbols);
+		state.putInt("repeaterDelay", repeaterDelay);
 		state.putString("callSign", callSign);
 		state.putString("draftText", draftText);
 		state.putBoolean("fancyHeader", fancyHeader);
@@ -398,6 +400,7 @@ public class MainActivity extends AppCompatActivity {
 		edit.putInt("audioSource", audioSource);
 		edit.putInt("carrierFrequency", carrierFrequency);
 		edit.putInt("noiseSymbols", noiseSymbols);
+		edit.putInt("repeaterDelay", repeaterDelay);
 		edit.putString("callSign", callSign);
 		edit.putString("draftText", draftText);
 		edit.putBoolean("fancyHeader", fancyHeader);
@@ -415,6 +418,7 @@ public class MainActivity extends AppCompatActivity {
 		final int defaultAudioSource = MediaRecorder.AudioSource.DEFAULT;
 		final int defaultCarrierFrequency = 1500;
 		final int defaultNoiseSymbols = 6;
+		final int defaultRepeaterDelay = 1;
 		final String defaultCallSign = "ANONYMOUS";
 		final String defaultDraftText = "";
 		final boolean defaultFancyHeader = false;
@@ -429,6 +433,7 @@ public class MainActivity extends AppCompatActivity {
 			audioSource = pref.getInt("audioSource", defaultAudioSource);
 			carrierFrequency = pref.getInt("carrierFrequency", defaultCarrierFrequency);
 			noiseSymbols = pref.getInt("noiseSymbols", defaultNoiseSymbols);
+			repeaterDelay = pref.getInt("repeaterDelay", defaultRepeaterDelay);
 			callSign = pref.getString("callSign", defaultCallSign);
 			draftText = pref.getString("draftText", defaultDraftText);
 			fancyHeader = pref.getBoolean("fancyHeader", defaultFancyHeader);
@@ -447,6 +452,7 @@ public class MainActivity extends AppCompatActivity {
 			audioSource = state.getInt("audioSource", defaultAudioSource);
 			carrierFrequency = state.getInt("carrierFrequency", defaultCarrierFrequency);
 			noiseSymbols = state.getInt("noiseSymbols", defaultNoiseSymbols);
+			repeaterDelay = state.getInt("repeaterDelay", defaultRepeaterDelay);
 			callSign = state.getString("callSign", defaultCallSign);
 			draftText = state.getString("draftText", defaultDraftText);
 			fancyHeader = state.getBoolean("fancyHeader", defaultFancyHeader);
@@ -550,6 +556,33 @@ public class MainActivity extends AppCompatActivity {
 				break;
 			case 22:
 				menu.findItem(R.id.action_set_noise_four_seconds).setChecked(true);
+				break;
+		}
+	}
+
+	private void setRepeaterDelay(int newRepeaterDelay) {
+		if (repeaterDelay == newRepeaterDelay)
+			return;
+		repeaterDelay = newRepeaterDelay;
+		updateRepeaterDelayMenu();
+	}
+
+	private void updateRepeaterDelayMenu() {
+		switch (repeaterDelay) {
+			case 0:
+				menu.findItem(R.id.action_set_repeater_no_delay).setChecked(true);
+				break;
+			case 1:
+				menu.findItem(R.id.action_set_repeater_delay_one_second).setChecked(true);
+				break;
+			case 2:
+				menu.findItem(R.id.action_set_repeater_delay_two_seconds).setChecked(true);
+				break;
+			case 4:
+				menu.findItem(R.id.action_set_repeater_delay_four_seconds).setChecked(true);
+				break;
+			case 8:
+				menu.findItem(R.id.action_set_repeater_delay_eight_seconds).setChecked(true);
 				break;
 		}
 	}
@@ -710,6 +743,7 @@ public class MainActivity extends AppCompatActivity {
 		updateRecordChannelMenu();
 		updateAudioSourceMenu();
 		updateNoiseSymbolsMenu();
+		updateRepeaterDelayMenu();
 		updateFancyHeaderMenu();
 		updateRepeaterModeMenu();
 		return true;
@@ -868,6 +902,26 @@ public class MainActivity extends AppCompatActivity {
 		}
 		if (id == R.id.action_set_noise_four_seconds) {
 			setNoiseSymbols(22);
+			return true;
+		}
+		if (id == R.id.action_set_repeater_no_delay) {
+			setRepeaterDelay(0);
+			return true;
+		}
+		if (id == R.id.action_set_repeater_delay_one_second) {
+			setRepeaterDelay(1);
+			return true;
+		}
+		if (id == R.id.action_set_repeater_delay_two_seconds) {
+			setRepeaterDelay(2);
+			return true;
+		}
+		if (id == R.id.action_set_repeater_delay_four_seconds) {
+			setRepeaterDelay(4);
+			return true;
+		}
+		if (id == R.id.action_set_repeater_delay_eight_seconds) {
+			setRepeaterDelay(8);
 			return true;
 		}
 		if (id == R.id.action_enable_fancy_header) {
@@ -1057,7 +1111,7 @@ public class MainActivity extends AppCompatActivity {
 		handler.postDelayed(() -> {
 			audioTrack.play();
 			setStatus(getString(R.string.transmitting));
-		}, 1000);
+		}, 1000L * repeaterDelay);
 	}
 
 	private void setInputType(ViewGroup np, int it) {

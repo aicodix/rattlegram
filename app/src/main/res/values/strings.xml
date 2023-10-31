@@ -29,8 +29,11 @@
 	<string name="one_second">One second</string>
 	<string name="two_seconds">Two seconds</string>
 	<string name="four_seconds">Four seconds</string>
+	<string name="eight_seconds">Eight seconds</string>
 	<string name="fancy_header">Fancy Header</string>
 	<string name="repeater_mode">Parrot Mode</string>
+	<string name="delay">Delay</string>
+	<string name="no_delay">No Delay</string>
 	<string name="night_mode">Night Mode</string>
 	<string name="enable">Enable</string>
 	<string name="disable">Disable</string>

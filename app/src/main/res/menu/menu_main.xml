@@ -177,6 +177,27 @@
 					android:id="@+id/action_disable_repeater_mode"
 					android:title="@string/disable" />
 			</group>
+			<item android:title="@string/delay">
+				<menu>
+					<group android:checkableBehavior="single">
+						<item
+							android:id="@+id/action_set_repeater_no_delay"
+							android:title="@string/no_delay" />
+						<item
+							android:id="@+id/action_set_repeater_delay_one_second"
+							android:title="@string/one_second" />
+						<item
+							android:id="@+id/action_set_repeater_delay_two_seconds"
+							android:title="@string/two_seconds" />
+						<item
+							android:id="@+id/action_set_repeater_delay_four_seconds"
+							android:title="@string/four_seconds" />
+						<item
+							android:id="@+id/action_set_repeater_delay_eight_seconds"
+							android:title="@string/eight_seconds" />
+					</group>
+				</menu>
+			</item>
 		</menu>
 	</item>
 	<item android:title="@string/night_mode">
