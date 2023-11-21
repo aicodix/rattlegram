@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 
 public class PassiveListenService extends Service {
     final String CHANNEL_ID = "Rattlegram Passive Listen";
+    public static boolean serviceRunning;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -40,6 +41,18 @@ public class PassiveListenService extends Service {
             startForeground(1, notification.build());
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onCreate() {
+        serviceRunning = true;
+        super.onCreate();
+    }
+
+    @Override
+    public void onDestroy() {
+        serviceRunning = false;
+        super.onDestroy();
     }
 
     @Nullable

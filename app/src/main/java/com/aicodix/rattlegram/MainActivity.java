@@ -1277,28 +1277,16 @@ public class MainActivity extends AppCompatActivity {
 		builder.show();
 	}
 
-	private boolean isServiceRunning(){
-		boolean serviceRunning = false;
-		ActivityManager am = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-		List<ActivityManager.RunningServiceInfo> l = am.getRunningServices(50);
-		for (ActivityManager.RunningServiceInfo runningServiceInfo : l) {
-			if (runningServiceInfo.service.getClassName().equals("com.aicodix.rattlegram.PassiveListenService")) {
-				serviceRunning = true;
-			}
-		}
-		return serviceRunning;
-	}
-
 	@Override
 	protected void onResume() {
-		if (!isServiceRunning())
+		if (!PassiveListenService.serviceRunning)
 			startListening();
 		super.onResume();
 	}
 
 	@Override
 	protected void onPause() {
-		if (!isServiceRunning()) {
+		if (!PassiveListenService.serviceRunning) {
 			stopListening();
 			storeSettings();
 		}
@@ -1307,7 +1295,7 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onDestroy() {
-		if (!isServiceRunning()) {
+		if (!PassiveListenService.serviceRunning) {
 			audioTrack.stop();
 			destroyEncoder();
 			destroyDecoder();
