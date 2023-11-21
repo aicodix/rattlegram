@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 			this.data = Arrays.copyOf(data, 170);
 		}
 	}
+
 	private ArrayList<Message> repeatedMessages;
 
 	private final int permissionID = 1;
@@ -812,6 +814,17 @@ public class MainActivity extends AppCompatActivity {
 				deleteMessages();
 			return true;
 		}
+		if (id == R.id.action_enable_passive_listen_mode) {
+			Context context = getApplicationContext();
+			Intent serviceIntent = new Intent(this, PassiveListenService.class);
+			context.startForegroundService(serviceIntent);
+			return true;
+		}
+		if (id == R.id.action_disable_passive_listen_mode) {
+			Context context = getApplicationContext();
+			Intent serviceIntent = new Intent(this, PassiveListenService.class);
+			context.stopService(serviceIntent);
+		}
 		if (id == R.id.action_enable_ultrasonic) {
 			enableUltrasonic();
 			return true;
@@ -1264,24 +1277,41 @@ public class MainActivity extends AppCompatActivity {
 		builder.show();
 	}
 
+	private boolean isServiceRunning(){
+		boolean serviceRunning = false;
+		ActivityManager am = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+		List<ActivityManager.RunningServiceInfo> l = am.getRunningServices(50);
+		for (ActivityManager.RunningServiceInfo runningServiceInfo : l) {
+			if (runningServiceInfo.service.getClassName().equals("com.aicodix.rattlegram.PassiveListenService")) {
+				serviceRunning = true;
+			}
+		}
+		return serviceRunning;
+	}
+
 	@Override
 	protected void onResume() {
-		startListening();
+		if (!isServiceRunning())
+			startListening();
 		super.onResume();
 	}
 
 	@Override
 	protected void onPause() {
-		stopListening();
-		storeSettings();
+		if (!isServiceRunning()) {
+			stopListening();
+			storeSettings();
+		}
 		super.onPause();
 	}
 
 	@Override
 	protected void onDestroy() {
-		audioTrack.stop();
-		destroyEncoder();
-		destroyDecoder();
+		if (!isServiceRunning()) {
+			audioTrack.stop();
+			destroyEncoder();
+			destroyDecoder();
+		}
 		super.onDestroy();
 	}
 }

@@ -242,6 +242,12 @@
 			<item
 				android:id="@+id/action_force_quit"
 				android:title="@string/force_quit" />
+			<item
+				android:id="@+id/action_enable_passive_listen_mode"
+				android:title="@string/enable_passive_listen_mode" />
+			<item
+				android:id="@+id/action_disable_passive_listen_mode"
+				android:title="@string/disable_passive_listen_mode" />
 		</menu>
 	</item>
 	<item

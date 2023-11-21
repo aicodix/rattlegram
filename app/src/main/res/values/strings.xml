@@ -44,6 +44,8 @@
 	<string name="enable">Enable</string>
 	<string name="disable">Disable</string>
 	<string name="force_quit">Force Quit</string>
+	<string name="enable_passive_listen_mode">Enable Passive Listen Mode</string>
+	<string name="disable_passive_listen_mode">Disable Passive Listen Mode</string>
 	<string name="enable_ultrasonic">Enable Ultrasonic</string>
 	<string name="quit">Quit</string>
 	<string name="close">Close</string>
