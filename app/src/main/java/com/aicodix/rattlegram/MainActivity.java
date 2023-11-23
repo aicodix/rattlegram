@@ -788,6 +788,8 @@ public class MainActivity extends AppCompatActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_main, menu);
 		menu.findItem(R.id.action_set_source_unprocessed).setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+		menu.findItem(R.id.action_enable_passive_listen_mode).setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+		menu.findItem(R.id.action_disable_passive_listen_mode).setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
 		this.menu = menu;
 		updateOutputRateMenu();
 		updateOutputChannelMenu();
@@ -817,7 +819,9 @@ public class MainActivity extends AppCompatActivity {
 		if (id == R.id.action_enable_passive_listen_mode) {
 			Context context = getApplicationContext();
 			Intent serviceIntent = new Intent(this, PassiveListenService.class);
-			context.startForegroundService(serviceIntent);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				context.startForegroundService(serviceIntent);
+			}
 			return true;
 		}
 		if (id == R.id.action_disable_passive_listen_mode) {
@@ -1279,8 +1283,7 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onResume() {
-		if (!PassiveListenService.serviceRunning)
-			startListening();
+		startListening();
 		super.onResume();
 	}
 
@@ -1288,8 +1291,8 @@ public class MainActivity extends AppCompatActivity {
 	protected void onPause() {
 		if (!PassiveListenService.serviceRunning) {
 			stopListening();
-			storeSettings();
 		}
+		storeSettings();
 		super.onPause();
 	}
 

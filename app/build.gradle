@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.aicodix.rattlegram"
-        minSdk 26
+        minSdk 21
         targetSdk 34
         versionCode 13
         versionName "1.12"

@@ -26,19 +26,22 @@ public class PassiveListenService extends Service {
             Log.e("PermissionError", "No permission to use mic");
             stopSelf();
         } else {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Rattlegram", NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("Rattlegram channel for foreground service notifications");
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                NotificationChannel channel = null;
+                channel = new NotificationChannel(CHANNEL_ID, "Rattlegram", NotificationManager.IMPORTANCE_DEFAULT);
+                channel.setDescription("Rattlegram channel for foreground service notifications");
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
 
-            Intent mainActIntent = new Intent(this, MainActivity.class);
-            PendingIntent mainActPendingIntent = PendingIntent.getActivity(this, 0, mainActIntent, PendingIntent.FLAG_IMMUTABLE);
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentText("Foreground service running")
-                    .setContentTitle("Rattlegram Passive Listen")
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                    .setContentIntent(mainActPendingIntent);
-            startForeground(1, notification.build());
+                Intent mainActIntent = new Intent(this, MainActivity.class);
+                PendingIntent mainActPendingIntent = PendingIntent.getActivity(this, 0, mainActIntent, PendingIntent.FLAG_IMMUTABLE);
+                NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setContentText("Foreground service running")
+                        .setContentTitle("Rattlegram Passive Listen")
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setContentIntent(mainActPendingIntent);
+                startForeground(1, notification.build());
+            }
         }
         return super.onStartCommand(intent, flags, startId);
     }
