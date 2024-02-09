@@ -51,7 +51,6 @@ class PolarDecoder {
 #else
 	typedef SIMD<code_type, 16 / sizeof(code_type)> mesg_type;
 #endif
-	typedef typename CODE::PolarHelper<mesg_type>::PATH metric_type;
 	static const int code_order = 11;
 	static const int code_len = 1 << code_order;
 	static const int max_bits = 1360 + 32;
@@ -72,20 +71,15 @@ public:
 
 	int operator()(uint8_t *message, const code_type *code, const uint32_t *frozen_bits, int data_bits) {
 		int crc_bits = data_bits + 32;
-		metric_type metric[mesg_type::SIZE];
-		decode(metric, mesg, code, frozen_bits, code_order);
+		decode(nullptr, mesg, code, frozen_bits, code_order);
 		systematic(frozen_bits, crc_bits);
-		int order[mesg_type::SIZE];
-		for (int k = 0; k < mesg_type::SIZE; ++k)
-			order[k] = k;
-		std::sort(order, order + mesg_type::SIZE, [metric](int a, int b) { return metric[a] < metric[b]; });
 		int best = -1;
 		for (int k = 0; k < mesg_type::SIZE; ++k) {
 			crc.reset();
 			for (int i = 0; i < crc_bits; ++i)
-				crc(mesg[i].v[order[k]] < 0);
+				crc(mesg[i].v[k] < 0);
 			if (crc() == 0) {
-				best = order[k];
+				best = k;
 				break;
 			}
 		}
