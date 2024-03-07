@@ -6,7 +6,7 @@ Copyright 2020 Ahmet Inan <inan@aicodix.de>
 
 #pragma once
 
-#include <algorithm>
+#include "sort.hh"
 #include "polar_helper.hh"
 
 namespace CODE {
@@ -55,24 +55,22 @@ struct PolarListNode<TYPE, 0>
 		TYPE sft = soft[1];
 		PATH fork[2*TYPE::SIZE];
 		for (int k = 0; k < TYPE::SIZE; ++k)
-			fork[k] = fork[k+TYPE::SIZE] = metric[k];
+			fork[2*k] = fork[2*k+1] = metric[k];
 		for (int k = 0; k < TYPE::SIZE; ++k)
 			if (sft.v[k] < 0)
-				fork[k] -= sft.v[k];
+				fork[2*k] -= sft.v[k];
 			else
-				fork[k+TYPE::SIZE] += sft.v[k];
+				fork[2*k+1] += sft.v[k];
 		int perm[2*TYPE::SIZE];
-		for (int k = 0; k < 2*TYPE::SIZE; ++k)
-			perm[k] = k;
-		std::nth_element(perm, perm+TYPE::SIZE, perm+2*TYPE::SIZE, [fork](int a, int b){ return fork[a] < fork[b]; });
+		CODE::insertion_sort(perm, fork, 2*TYPE::SIZE);
 		for (int k = 0; k < TYPE::SIZE; ++k)
-			metric[k] = fork[perm[k]];
+			metric[k] = fork[k];
 		MAP map;
 		for (int k = 0; k < TYPE::SIZE; ++k)
-			map.v[k] = perm[k] % TYPE::SIZE;
+			map.v[k] = perm[k] >> 1;
 		TYPE hrd;
 		for (int k = 0; k < TYPE::SIZE; ++k)
-			hrd.v[k] = perm[k] < TYPE::SIZE ? 1 : -1;
+			hrd.v[k] = 1 - 2 * (perm[k] & 1);
 		message[*count] = hrd;
 		maps[*count] = map;
 		++*count;
@@ -291,7 +289,7 @@ public:
 		int count = 0;
 		metric[0] = 0;
 		for (int k = 1; k < TYPE::SIZE; ++k)
-			metric[k] = 1000;
+			metric[k] = 1000000;
 		int length = 1 << level;
 		for (int i = 0; i < length; ++i)
 			soft[length+i] = vdup<TYPE>(codeword[i]);
@@ -312,19 +310,12 @@ public:
 		default: assert(false);
 		}
 
-		int perm[TYPE::SIZE];
-		for (int k = 0; k < TYPE::SIZE; ++k)
-			perm[k] = k;
-		std::sort(perm, perm + TYPE::SIZE, [metric](int a, int b) { return metric[a] < metric[b]; });
 		for (int i = 0, r = 0; rank != nullptr && i < TYPE::SIZE; ++i) {
-			if (i > 0 && metric[perm[i-1]] != metric[perm[i]])
+			if (i > 0 && metric[i-1] != metric[i])
 				++r;
 			rank[i] = r;
 		}
-		MAP acc;
-		for (int k = 0; k < TYPE::SIZE; ++k)
-			acc.v[k] = perm[k];
-		acc = vshuf(maps[count-1], acc);
+		MAP acc = maps[count-1];
 		for (int i = count-2; i >= 0; --i) {
 			message[i] = vshuf(message[i], acc);
 			acc = vshuf(maps[i], acc);

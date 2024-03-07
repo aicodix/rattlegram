@@ -526,10 +526,9 @@ template <>
 inline SIMD<float, 4> vcopysign(SIMD<float, 4> a, SIMD<float, 4> b)
 {
 	SIMD<float, 4> tmp;
-	uint32x4_t negz = (uint32x4_t)vdupq_n_f32(-0.f);
 	tmp.m = (float32x4_t)vorrq_u32(
-		vbicq_u32((uint32x4_t)a.m, negz),
-		vandq_u32((uint32x4_t)b.m, negz));
+		vbicq_u32((uint32x4_t)a.m, (uint32x4_t)vdupq_n_f32(-0.f)),
+		vandq_u32((uint32x4_t)b.m, (uint32x4_t)vdupq_n_f32(-0.f)));
 	return tmp;
 }
 

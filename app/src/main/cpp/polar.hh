@@ -8,7 +8,6 @@ Copyright 2022 Ahmet Inan <inan@aicodix.de>
 
 #include <cmath>
 #include <iostream>
-#include <algorithm>
 
 #include "crc.hh"
 #include "bitman.hh"

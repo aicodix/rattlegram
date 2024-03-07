@@ -8,7 +8,6 @@ Copyright 2022 Ahmet Inan <inan@aicodix.de>
 
 #include <cmath>
 #include <iostream>
-#include <algorithm>
 #include "bose_chaudhuri_hocquenghem_encoder.hh"
 #include "base37_bitmap.hh"
 #include "xorshift.hh"
