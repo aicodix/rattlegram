@@ -6,7 +6,7 @@ Copyright 2021 Ahmet Inan <inan@aicodix.de>
 
 #pragma once
 
-#include <algorithm>
+#include "quick.hh"
 
 namespace DSP {
 
@@ -25,13 +25,11 @@ public:
 			for (int j = i+1; count < size_ && j < LEN; ++j)
 				if (x[j] != x[i])
 					temp_[count++] = (y[j] - y[i]) / (x[j] - x[i]);
-		std::nth_element(temp_, temp_+count/2, temp_+count);
-		slope_ = temp_[count/2];
+		slope_ = quick_select(temp_, count/2, count);
 		count = 0;
 		for (int i = 0; count < size_ && i < LEN; ++i)
 			temp_[count++] = y[i] - slope_ * x[i];
-		std::nth_element(temp_, temp_+count/2, temp_+count);
-		yint_ = temp_[count/2];
+		yint_ = quick_select(temp_, count/2, count);
 		xint_ = - yint_ / slope_;
 	}
 	TYPE xint()
