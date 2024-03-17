@@ -30,9 +30,9 @@ struct ImprovePAPR {
 		for (int i = 0; i < fact * size; ++i)
 			temp[i] *= factor;
 		for (int i = 0; i < fact * size; ++i) {
-			value amp = std::max(std::abs(temp[i].real()), std::abs(temp[i].imag()));
-			if (amp > 1)
-				temp[i] /= amp;
+			value pwr = norm(temp[i]);
+			if (pwr > 1)
+				temp[i] /= std::sqrt(pwr);
 		}
 		fwd(over, temp);
 		for (int i = 0; i < size / 2; ++i)
@@ -60,9 +60,9 @@ struct ImprovePAPR<cmplx, size, 1> {
 		for (int i = 0; i < size; ++i)
 			temp[i] *= factor;
 		for (int i = 0; i < size; ++i) {
-			value amp = std::max(std::abs(temp[i].real()), std::abs(temp[i].imag()));
-			if (amp > 1)
-				temp[i] /= amp;
+			value pwr = norm(temp[i]);
+			if (pwr > 1)
+				temp[i] /= std::sqrt(pwr);
 		}
 		fwd(freq, temp);
 		for (int i = 0; i < size; ++i)
