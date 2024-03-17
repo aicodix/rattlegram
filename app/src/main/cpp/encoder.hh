@@ -59,7 +59,7 @@ class Encoder : public EncoderInterface {
 	CODE::CRC<uint16_t> crc;
 	CODE::BoseChaudhuriHocquenghemEncoder<255, 71> bch;
 	CODE::MLS noise_seq;
-	ImprovePAPR<cmplx, symbol_length, RATE <= 16000 ? 4 : 1> improve_papr;
+	ImprovePAPR<cmplx, symbol_length, (32000 + RATE / 2) / RATE> improve_papr;
 	PolarEncoder<code_type> polar;
 	cmplx temp[extended_length], freq[symbol_length], prev[pay_car_cnt], guard[guard_length];
 	uint8_t mesg[max_bits / 8], call[9];
