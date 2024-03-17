@@ -21,10 +21,10 @@ class SchmidlCox {
 	DSP::SMA4<cmplx, value, symbol_len, false> cor;
 	DSP::SMA4<value, value, 2 * symbol_len, false> pwr;
 	DSP::SMA4<value, value, match_len, false> match;
-	DSP::Delay<value, match_del> delay;
+	DSP::Delay<value, match_del> align;
 	DSP::SchmittTrigger<value> threshold;
 	DSP::FallingEdgeTrigger falling;
-	cmplx tmp0[symbol_len], tmp1[symbol_len], tmp2[symbol_len];
+	cmplx tmp0[symbol_len], tmp1[symbol_len];
 	cmplx kern[symbol_len];
 	value timing_max = 0;
 	value phase_max = 0;
@@ -34,17 +34,17 @@ class SchmidlCox {
 		return (carrier + symbol_len) % symbol_len;
 	}
 
-	static cmplx demod_or_erase(cmplx curr, cmplx prev) {
-		if (!(norm(prev) > 0))
-			return 0;
-		cmplx cons = curr / prev;
-		if (!(norm(cons) <= 4))
-			return 0;
-		return cons;
+	static cmplx demod_or_erase(cmplx curr, cmplx prev, value pwr) {
+		if (norm(curr) > pwr && norm(prev) > pwr) {
+			cmplx cons = curr / prev;
+			if (norm(cons) < value(4))
+				return cons;
+		}
+		return 0;
 	}
 
 public:
-	int symbol_pos = search_pos;
+	int symbol_pos = 0;
 	value cfo_rad = 0;
 	value frac_cfo = 0;
 
@@ -57,10 +57,10 @@ public:
 	bool operator()(const cmplx *samples) {
 		cmplx P = cor(samples[search_pos + symbol_len] * conj(samples[search_pos + 2 * symbol_len]));
 		value R = value(0.5) * pwr(norm(samples[search_pos + 2 * symbol_len]));
-		value min_R = 0.0001 * symbol_len;
+		value min_R = 0.00001 * symbol_len;
 		R = std::max(R, min_R);
 		value timing = match(norm(P) / (R * R));
-		value phase = delay(arg(P));
+		value phase = align(arg(P));
 
 		bool collect = threshold(timing);
 		bool process = falling(collect);
@@ -83,24 +83,28 @@ public:
 
 		DSP::Phasor<cmplx> osc;
 		osc.omega(frac_cfo);
-		int test_pos = search_pos - index_max;
+		symbol_pos = search_pos - index_max;
 		index_max = 0;
 		timing_max = 0;
 		for (int i = 0; i < symbol_len; ++i)
-			tmp1[i] = samples[i + test_pos + symbol_len] * osc();
+			tmp1[i] = samples[i + symbol_pos + symbol_len] * osc();
 		fwd(tmp0, tmp1);
+		value min_pwr = 0;
 		for (int i = 0; i < symbol_len; ++i)
-			tmp1[i] = demod_or_erase(tmp0[i], tmp0[bin(i - 1)]);
+			min_pwr += norm(tmp0[i]);
+		min_pwr /= symbol_len;
+		for (int i = 0; i < symbol_len; ++i)
+			tmp1[i] = demod_or_erase(tmp0[i], tmp0[bin(i - 1)], min_pwr);
 		fwd(tmp0, tmp1);
 		for (int i = 0; i < symbol_len; ++i)
 			tmp0[i] *= kern[i];
-		bwd(tmp2, tmp0);
+		bwd(tmp1, tmp0);
 
 		int shift = 0;
 		value peak = 0;
 		value next = 0;
 		for (int i = 0; i < symbol_len; ++i) {
-			value power = norm(tmp2[i]);
+			value power = norm(tmp1[i]);
 			if (power > peak) {
 				next = peak;
 				peak = power;
@@ -112,10 +116,10 @@ public:
 		if (peak <= next * 4)
 			return false;
 
-		int pos_err = std::nearbyint(arg(tmp2[shift]) * symbol_len / Const::TwoPi());
+		int pos_err = std::nearbyint(arg(tmp1[shift]) * symbol_len / Const::TwoPi());
 		if (abs(pos_err) > guard_len / 2)
 			return false;
-		symbol_pos = test_pos - pos_err;
+		symbol_pos -= pos_err;
 
 		cfo_rad = shift * (Const::TwoPi() / symbol_len) - frac_cfo;
 		if (cfo_rad >= Const::Pi())
