@@ -111,7 +111,7 @@ class Encoder : public EncoderInterface {
 			freq[bin(2 * i + cor_seq_off)] = nrz(seq());
 		for (int i = 0; i < cor_seq_len; ++i)
 			freq[bin(2 * i + cor_seq_off)] *= freq[bin(2 * (i - 1) + cor_seq_off)];
-		transform(false);
+		transform();
 	}
 
 	void preamble() {
@@ -153,7 +153,7 @@ class Encoder : public EncoderInterface {
 			for (int i = 0; i < 8; ++i)
 				if (base37_bitmap[call[j] + 37 * fancy_line] & (1 << (7 - i)))
 					freq[bin((8 * j + i) * 3 + fancy_off)] = factor * nrz(noise_seq());
-		transform(false);
+		transform();
 	}
 
 	void noise_symbol() {
@@ -162,7 +162,7 @@ class Encoder : public EncoderInterface {
 			freq[i] = 0;
 		for (int i = 0; i < pay_car_cnt; ++i)
 			freq[bin(i + pay_car_off)] = factor * cmplx(nrz(noise_seq()), nrz(noise_seq()));
-		transform(false);
+		transform();
 	}
 
 	void payload_symbol() {
@@ -178,9 +178,8 @@ class Encoder : public EncoderInterface {
 			temp[i] = 0;
 	}
 
-	void transform(bool papr_reduction = true) {
-		if (papr_reduction && RATE <= 16000)
-			improve_papr(freq);
+	void transform() {
+		improve_papr(freq);
 		bwd(temp, freq);
 		for (int i = 0; i < symbol_length; ++i)
 			temp[i] /= std::sqrt(float(8 * symbol_length));
