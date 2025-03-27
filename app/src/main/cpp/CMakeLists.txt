@@ -5,6 +5,8 @@
 
 cmake_minimum_required(VERSION 3.18.1)
 
+add_link_options("-Wl,--build-id=none")
+
 # Declares and names the project.
 
 project("rattlegram")
