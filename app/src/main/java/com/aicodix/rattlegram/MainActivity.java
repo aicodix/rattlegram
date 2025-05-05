@@ -6,12 +6,16 @@ Copyright 2022 Ahmet Inan <inan@aicodix.de>
 
 package com.aicodix.rattlegram;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import android.Manifest;
 import android.content.Context;
@@ -486,10 +490,12 @@ public class MainActivity extends AppCompatActivity {
 		}
 		ultrasonicEnabled = Math.abs(carrierFrequency) > 3000;
 		super.onCreate(state);
+		EdgeToEdge.enable(this);
 		ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
 		status = binding.status;
 		handler = new Handler(getMainLooper());
 		setContentView(binding.getRoot());
+		handleInsets();
 		stagedCFO = new float[1];
 		stagedMode = new int[1];
 		stagedCall = new byte[10];
@@ -528,6 +534,14 @@ public class MainActivity extends AppCompatActivity {
 		String message = extractIntent(getIntent());
 		if (message != null)
 			composeMessage(message);
+	}
+
+	private void handleInsets() {
+		ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+			Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+			v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+			return insets;
+		});
 	}
 
 	@Override
