@@ -1,0 +1,9 @@
+Mit <i>Rattlegram</i> lassen sich kurze Textnachrichten als COFDMTV-codierte Audiosignale übertragen. COFDMTV basiert auf der COFDM-Technologie (Coded Orthogonal Frequency-Division Multiplexing):
+
+* 160 ms lange OFDM-Symbole
+* 6,25 Hz pro Unterträger
+* 1/8 Schutzintervall
+* differenzcodierte PSK-Modulation (Phasenumtastung)
+* systematische Polarcodes für Vorwärtsfehlerkorrektur
+
+Derzeit werden die Modi 14, 15 und 16 unterstützt: Die Verwendung von entweder SPC (2048, 1392), SPC (2048, 1056) oder SPC (2048, 712) mit CRC32C unterstützte die SCL-Decodierung und die differenzielle QPSK-Modulation für die Nutzlast. Es wird nur eine Bandbreite von 1600 Hz benötigt und die Übertragung von entweder 85, 128 oder 170 Bytes dauert etwa eine Sekunde, wenn Lead Noise und Fancy Header deaktiviert sind.

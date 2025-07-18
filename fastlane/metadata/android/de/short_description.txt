@@ -1,0 +1,1 @@
+kurze Textnachrichten als COFDMTV-codierte Audiosignale übertragen
