@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     ndkVersion "28.2.13676358"
 
     defaultConfig {
         applicationId "com.aicodix.rattlegram"
-        minSdk 21
-        targetSdk 36
+        minSdk 23
+        targetSdk 37
         versionCode 19
         versionName "1.18"
 
@@ -48,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.1'
-    implementation 'com.google.android.material:material:1.13.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'com.google.android.material:material:1.14.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
 }
