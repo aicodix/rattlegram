@@ -1,0 +1,109 @@
+<resources>
+	<string name="decoder_settings">Ustawienia dekodera</string>
+	<string name="encoder_settings">Ustawienia enkodera</string>
+	<string name="delete">Usuń</string>
+	<string name="delete_messages">Usuń wiadomości</string>
+	<string name="danger_zone">Strefa zagrożenia</string>
+	<string name="sample_rate">Częstotliwość próbkowania</string>
+	<string name="channel_select">Wybór kanału</string>
+	<string name="channel_default">Domyślny</string>
+	<string name="channel_first">Pierwszy</string>
+	<string name="channel_second">Drugi</string>
+	<string name="channel_summation">Sumowanie</string>
+	<string name="channel_analytic">Analiza</string>
+	<string name="audio_source">Źródło dźwięku</string>
+	<string name="source_default">Domyślne</string>
+	<string name="source_microphone">Mikrofon</string>
+	<string name="source_camcorder">Kamera wideo</string>
+	<string name="source_voice_recognition">Rozpoznawanie głosu</string>
+	<string name="source_unprocessed">Nieprzetworzone</string>
+	<string name="leading_noise">Szum wstępny</string>
+	<string name="quarter_second">Ćwierć sekundy</string>
+	<string name="half_second">Pół sekundy</string>
+	<string name="one_second">Jedna sekunda</string>
+	<string name="two_seconds">Dwie sekundy</string>
+	<string name="four_seconds">Cztery sekundy</string>
+	<string name="eight_seconds">Osiem sekund</string>
+	<string name="quarter_minute">Ćwierć minuty</string>
+	<string name="half_minute">Pół minuty</string>
+	<string name="one_minute">Jedna minuta</string>
+	<string name="two_minutes">Dwie minuty</string>
+	<string name="fancy_header">Rozbudowany nagłówek</string>
+	<string name="repeater_mode">Tryb papugi</string>
+	<string name="delay">Opóźnienie</string>
+	<string name="no_delay">Brak opóźnienia</string>
+	<string name="debounce">Odbijanie</string>
+	<string name="allow_bouncing">Zezwól na odbijanie</string>
+	<string name="night_mode">Tryb nocny</string>
+	<string name="enable">Włącz</string>
+	<string name="disable">Wyłącz</string>
+	<string name="force_quit">Wymuś zamknięcie</string>
+	<string name="enable_ultrasonic">Włącz ultradźwięki</string>
+	<string name="quit">Wyjdź</string>
+	<string name="close">Zamknij</string>
+	<string name="okay">OK</string>
+	<string name="cancel">Anuluj</string>
+	<string name="draft">Szkic</string>
+	<string name="discard">Odrzuć</string>
+	<string name="transmit">Nadaj</string>
+	<string name="compose">Utwórz</string>
+	<string name="compose_message">Nowa wiadomość</string>
+	<string name="call_sign">Znak wywoławczy</string>
+	<string name="call_hint">Twój znak wywoławczy</string>
+	<string name="message_hint">Treść wiadomości</string>
+	<string name="carrier_frequency">Częstotliwość nośna</string>
+	<string name="audio_init_failed">Nie udało się zainicjować dźwięku. Spróbuj innych ustawień. Wymuszenie zamknięcia i ponowne uruchomienie również może pomóc.</string>
+	<string name="audio_setup_failed">Nie udało się skonfigurować dźwięku. Spróbuj innych ustawień.</string>
+	<string name="audio_permission_denied">Odmowa dostępu do mikrofonu. Sprawdź uprawnienia.</string>
+	<string name="audio_recording_error">Nagrywanie dźwięku nie powiodło się. Sprawdź, czy dostęp nie jest zablokowany. W razie potrzeby uruchom ponownie urządzenie, aby odzyskać dostęp.</string>
+	<string name="listening">Nasłuchiwanie</string>
+	<string name="transmitting">Nadawanie</string>
+	<string name="ignoring">Ignorowanie</string>
+	<string name="spectrum_analyzer">Analizator widma</string>
+	<string name="spectrum_description">Widmo sygnału audio</string>
+	<string name="spectrogram_description">Spektrogram sygnału audio</string>
+	<string name="from_status">Od %1$s - Tryb %2$d - CFO %3$.2f Hz</string>
+	<plurals name="strong_bytes_left">
+		<item quantity="one">Pozostał %d bajt dla silnej ochrony</item>
+		<item quantity="other">Pozostało %d bajtów dla silnej ochrony</item>
+	</plurals>
+	<plurals name="medium_bytes_left">
+		<item quantity="one">Pozostał %d bajt dla średniej ochrony</item>
+		<item quantity="other">Pozostało %d bajtów dla średniej ochrony</item>
+	</plurals>
+	<plurals name="normal_bytes_left">
+		<item quantity="one">Pozostał %d bajt dla normalnej ochrony</item>
+		<item quantity="other">Pozostało %d bajtów dla normalnej ochrony</item>
+	</plurals>
+	<plurals name="over_capacity">
+		<item quantity="one">%d bajt ponad pojemność</item>
+		<item quantity="other">%d bajtów ponad pojemność</item>
+	</plurals>
+	<plurals name="bits_flipped">
+		<item quantity="one">Poprawiono %d przekłamanie bitu</item>
+		<item quantity="other">Poprawiono %d przekłamań bitów</item>
+	</plurals>
+	<string name="received">Odebrano</string>
+	<string name="transmitted">Wysłano</string>
+	<string name="repeated">Powtórzono</string>
+	<string name="preamble_fail">Błąd preambuły</string>
+	<string name="preamble_nope">Tryb %1$d nieobsługiwany</string>
+	<string name="preamble_ping">Odebrano ping</string>
+	<string name="sent_ping">Wysłano ping</string>
+	<string name="heap_error">Za mało pamięci</string>
+	<string name="decoding_failed">Dekodowanie nie powiodło się</string>
+	<string name="payload_unknown">Nieznany ładunek danych</string>
+	<string name="force_quit_prompt">Czy na pewno wymusić zamknięcie aplikacji?</string>
+	<string name="delete_messages_prompt">Czy na pewno trwale usunąć wszystkie wiadomości?</string>
+	<string name="enable_ultrasonic_prompt">Czy na pewno włączyć nadawanie na częstotliwościach ultradźwiękowych?
+\n\nOSTRZEŻENIE:\nWyższe częstotliwości próbkowania (44,1 i 48 kHz) umożliwiają stosowanie częstotliwości nośnych powyżej 16 kHz do transmisji ultradźwiękowych. Długotrwałe narażenie na dźwięki o wysokim tonie może uszkodzić słuch, nawet jeśli ich nie słyszysz.
+	</string>
+	<string name="privacy_policy">Polityka prywatności</string>
+	<string name="privacy_policy_text">Aby dekodować wiadomości tekstowe zakodowane w COFDMTV, Rattlegram potrzebuje dostępu do mikrofonu.
+Dostęp do mikrofonu jest uznawany za wrażliwe uprawnienie i masz prawo wiedzieć, co Rattlegram robi z tym dostępem:
+Dane nagrane z mikrofonu są używane wyłącznie do obsługi dekodera COFDMTV oraz analizatora widma na potrzeby wizualizacji zawartości częstotliwościowej.
+Rattlegram używa bardzo małego bufora tymczasowego w pamięci ulotnej i stale nadpisuje ten bufor nowymi danymi z mikrofonu.
+Wynikowa wiadomość tekstowa z dekodera COFDMTV to jedyne dane, które trafiają do pamięci trwałej na Twoim urządzeniu.</string>
+	<string name="about">O Rattlegram</string>
+	<string name="base37_characters">(spacja, 0–9, A-Z)</string>
+</resources>

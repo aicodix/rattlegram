@@ -1,16 +1,16 @@
 <resources>
-	<string name="app_name">Rattlegram</string>
+	<string name="app_name" translatable="false">Rattlegram</string>
 	<string name="decoder_settings">Decoder Settings</string>
 	<string name="encoder_settings">Encoder Settings</string>
 	<string name="delete">Delete</string>
 	<string name="delete_messages">Delete Messages</string>
 	<string name="danger_zone">Danger Zone</string>
 	<string name="sample_rate">Sample Rate</string>
-	<string name="rate_8000">8 kHz</string>
-	<string name="rate_16000">16 kHz</string>
-	<string name="rate_32000">32 kHz</string>
-	<string name="rate_44100">44.1 kHz</string>
-	<string name="rate_48000">48 kHz</string>
+	<string name="rate_8000" translatable="false">8 kHz</string>
+	<string name="rate_16000" translatable="false">16 kHz</string>
+	<string name="rate_32000" translatable="false">32 kHz</string>
+	<string name="rate_44100" translatable="false">44.1 kHz</string>
+	<string name="rate_48000" translatable="false">48 kHz</string>
 	<string name="channel_select">Channel Select</string>
 	<string name="channel_default">Default</string>
 	<string name="channel_first">First</string>
@@ -52,7 +52,7 @@
 	<string name="draft">Draft</string>
 	<string name="discard">Discard</string>
 	<string name="transmit">Transmit</string>
-	<string name="ping">Ping</string>
+	<string name="ping" translatable="false">Ping</string>
 	<string name="compose">Compose</string>
 	<string name="compose_message">Compose Message</string>
 	<string name="call_sign">Call Sign</string>
@@ -69,8 +69,8 @@
 	<string name="spectrum_analyzer">Spectrum Analyzer</string>
 	<string name="spectrum_description">Spectrum of audio signal</string>
 	<string name="spectrogram_description">Spectrogram of audio signal</string>
-	<string name="title_line">%1$s - %2$s - %3$s</string>
-	<string name="title_message">%1$s - %2$s - %3$s:\n%4$s</string>
+	<string name="title_line" translatable="false">%1$s - %2$s - %3$s</string>
+	<string name="title_message" translatable="false">%1$s - %2$s - %3$s:\n%4$s</string>
 	<string name="from_status">From %1$s - Mode %2$d - CFO %3$.2f Hz</string>
 	<plurals name="strong_bytes_left">
 		<item quantity="one">%d byte left for strong protection</item>
@@ -114,7 +114,7 @@ The data recorded from the microphone is only used to feed the COFDMTV decoder a
 Rattlegram uses a very small temporary buffer in volatile memory and constantly overwrites that buffer with new data from the microphone.
 The resulting text message from the COFDMTV decoder is the only data that gets stored in persistent storage on your device.</string>
 	<string name="about">About Rattlegram</string>
-	<string name="about_text">Rattlegram %1$s\nCopyright 2022 aicodix GmbH
+	<string name="about_text" translatable="false">Rattlegram %1$s\nCopyright 2022 aicodix GmbH
 \n\nPlease read DISCLAIMER at the bottom of this page.
 \n\nRattlegram transmits short text messages as COFDMTV encoded audio and is based on open-source software:
 \n\nOFDM modem implementation and specification:\nhttps://github.com/aicodix/modem\nBSD Zero Clause License
