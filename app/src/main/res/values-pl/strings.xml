@@ -1,16 +1,10 @@
 <resources>
-	<string name="app_name">Rattlegram</string>
 	<string name="decoder_settings">Ustawienia dekodera</string>
 	<string name="encoder_settings">Ustawienia enkodera</string>
 	<string name="delete">Usuń</string>
 	<string name="delete_messages">Usuń wiadomości</string>
 	<string name="danger_zone">Strefa zagrożenia</string>
 	<string name="sample_rate">Częstotliwość próbkowania</string>
-	<string name="rate_8000">8 kHz</string>
-	<string name="rate_16000">16 kHz</string>
-	<string name="rate_32000">32 kHz</string>
-	<string name="rate_44100">44.1 kHz</string>
-	<string name="rate_48000">48 kHz</string>
 	<string name="channel_select">Wybór kanału</string>
 	<string name="channel_default">Domyślny</string>
 	<string name="channel_first">Pierwszy</string>
@@ -52,7 +46,6 @@
 	<string name="draft">Szkic</string>
 	<string name="discard">Odrzuć</string>
 	<string name="transmit">Nadaj</string>
-	<string name="ping">Ping</string>
 	<string name="compose">Utwórz</string>
 	<string name="compose_message">Nowa wiadomość</string>
 	<string name="call_sign">Znak wywoławczy</string>
@@ -69,8 +62,6 @@
 	<string name="spectrum_analyzer">Analizator widma</string>
 	<string name="spectrum_description">Widmo sygnału audio</string>
 	<string name="spectrogram_description">Spektrogram sygnału audio</string>
-	<string name="title_line">%1$s - %2$s - %3$s</string>
-	<string name="title_message">%1$s - %2$s - %3$s:\n%4$s</string>
 	<string name="from_status">Od %1$s - Tryb %2$d - CFO %3$.2f Hz</string>
 	<plurals name="strong_bytes_left">
 		<item quantity="one">Pozostał %d bajt dla silnej ochrony</item>
@@ -114,13 +105,5 @@ Dane nagrane z mikrofonu są używane wyłącznie do obsługi dekodera COFDMTV o
 Rattlegram używa bardzo małego bufora tymczasowego w pamięci ulotnej i stale nadpisuje ten bufor nowymi danymi z mikrofonu.
 Wynikowa wiadomość tekstowa z dekodera COFDMTV to jedyne dane, które trafiają do pamięci trwałej na Twoim urządzeniu.</string>
 	<string name="about">O Rattlegram</string>
-	<string name="about_text">Rattlegram %1$s\nCopyright 2022 aicodix GmbH
-\n\nPlease read DISCLAIMER at the bottom of this page.
-\n\nRattlegram transmits short text messages as COFDMTV encoded audio and is based on open-source software:
-\n\nOFDM modem implementation and specification:\nhttps://github.com/aicodix/modem\nBSD Zero Clause License
-\n\nPolar list and ordered statistics decoding:\nhttps://github.com/aicodix/code\nBSD Zero Clause License
-\n\nDigital signal processing:\nhttps://github.com/aicodix/dsp\nBSD Zero Clause License
-\n\nFancy header font:\nhttp://terminus-font.sourceforge.net\nSIL Open Font License
-\n\nDISCLAIMER:\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</string>
 	<string name="base37_characters">(spacja, 0–9, A-Z)</string>
 </resources>
